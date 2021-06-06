@@ -1,1 +1,0 @@
-enum MapRegisterSection { map, address }

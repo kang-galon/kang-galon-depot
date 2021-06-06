@@ -1,37 +1,61 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:geocoding/geocoding.dart' as geocoding;
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:kang_galon_depot/constans/enum.dart';
+import 'package:kang_galon_depot/blocs/blocs.dart';
+import 'package:kang_galon_depot/constants/enum.dart';
+import 'package:kang_galon_depot/constants/value.dart';
+import 'package:kang_galon_depot/event_states/depot_event.dart';
+import 'package:kang_galon_depot/helpers/map.dart';
+import 'package:kang_galon_depot/models/models.dart';
 import 'package:kang_galon_depot/ui/configs/pallette.dart';
 import 'package:kang_galon_depot/ui/screens/screens.dart';
+import 'package:kang_galon_depot/ui/widgets/widgets.dart';
+import 'package:location/location.dart';
 
-class MapRegisterScreen extends StatefulWidget {
+class RegisterMapScreen extends StatefulWidget {
   @override
-  _MapRegisterScreenState createState() => _MapRegisterScreenState();
+  _RegisterMapScreenState createState() => _RegisterMapScreenState();
 }
 
-class _MapRegisterScreenState extends State<MapRegisterScreen> {
+class _RegisterMapScreenState extends State<RegisterMapScreen> {
+  late DepotBloc _depotBloc;
   late Completer<GoogleMapController> _controller;
+  late TextEditingController _addressController;
+  late GlobalKey<FormState> _formKey;
+  late Location _location;
   late double _latitude;
   late double _longitude;
   late bool _isCameraMove;
+  late double _cameraZoom;
   late MapRegisterSection _section;
 
   @override
   void initState() {
-    // init
-    _controller = Completer();
+    // init bloc
+    _depotBloc = BlocProvider.of<DepotBloc>(context);
 
-    // init section
-    _section = MapRegisterSection.map;
+    // init controller
+    _controller = Completer();
+    _addressController = TextEditingController();
+
+    // init
+    _formKey = GlobalKey();
+    _location = Location();
 
     // set
+    _cameraZoom = 20.0;
     _isCameraMove = false;
+    _section = MapRegisterSection.map;
 
     // init lat long
-    _latitude = 37.43296265331129;
-    _longitude = -122.08832357078792;
+    _latitude = Value.defaultLatitude;
+    _longitude = Value.defaultLongitude;
+
+    // get current location
+    _getLocation();
 
     super.initState();
   }
@@ -39,13 +63,68 @@ class _MapRegisterScreenState extends State<MapRegisterScreen> {
   @override
   void dispose() {
     _controller.future.then((value) => value.dispose());
+    _addressController.dispose();
+
     super.dispose();
   }
 
+  void _getLocation() async {
+    bool serviceEnabled = await _location.serviceEnabled();
+    if (!serviceEnabled) {
+      serviceEnabled = await _location.requestService();
+    }
+
+    PermissionStatus permissionGranted = await _location.hasPermission();
+    if (permissionGranted != PermissionStatus.granted) {
+      permissionGranted = await _location.requestPermission();
+    }
+
+    if (serviceEnabled && permissionGranted == PermissionStatus.granted) {
+      LocationData locationData = await _location.getLocation();
+      _latitude = locationData.latitude!;
+      _longitude = locationData.longitude!;
+
+      await (await _controller.future)
+          .animateCamera(CameraUpdate.newCameraPosition(
+        CameraPosition(
+          target: LatLng(_latitude, _longitude),
+          zoom: _cameraZoom,
+        ),
+      ));
+    }
+  }
+
+  // void _getAddressLocation() async {
+  //   String address = '';
+
+  //   try {
+  //     List<geocoding.Placemark> placemarks =
+  //         await geocoding.placemarkFromCoordinates(_latitude, _longitude);
+
+  //     geocoding.Placemark placemark = placemarks.first;
+  //     address =
+  //         '${placemark.street}, ${placemark.locality}, ${placemark.subAdministrativeArea}, ${placemark.administrativeArea}, ${placemark.postalCode}';
+  //   } catch (e) {
+  //     print(e);
+  //   }
+
+  //   _addressController.text = address;
+  // }
+
+  String? _addressValidator(String? value) {
+    if (value != null && value.isEmpty) {
+      return 'Wajib diisi';
+    }
+    return null;
+  }
+
   void _chooseLocationAction() {
-    setState(() {
-      _section = MapRegisterSection.address;
+    // get address use background process
+    MapHelper.getAddressLocation(_latitude, _longitude).then((value) {
+      _addressController.text = value;
     });
+
+    setState(() => _section = MapRegisterSection.address);
   }
 
   void _backToMapAction() {
@@ -55,10 +134,23 @@ class _MapRegisterScreenState extends State<MapRegisterScreen> {
   }
 
   void _continueAction() {
-    Navigator.pushReplacement(
-      context,
-      MaterialPageRoute(builder: (_) => PhotoRegisterScreen()),
-    );
+    if (_formKey.currentState!.validate()) {
+      String address = _addressController.text.trim();
+
+      // set location latitude longitude
+      _depotBloc.add(DepotRegisterProcessed(
+        depotRegister: DepotRegister(
+          latitude: _latitude,
+          longitude: _longitude,
+          address: address,
+        ),
+      ));
+
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (_) => ProfileScreen()),
+      );
+    }
   }
 
   @override
@@ -89,7 +181,7 @@ class _MapRegisterScreenState extends State<MapRegisterScreen> {
           zoomControlsEnabled: false,
           initialCameraPosition: CameraPosition(
             target: LatLng(_latitude, _longitude),
-            zoom: 20.0,
+            zoom: _cameraZoom,
           ),
           onCameraMove: (cameraPosition) {
             _latitude = cameraPosition.target.latitude;
@@ -142,21 +234,20 @@ class _MapRegisterScreenState extends State<MapRegisterScreen> {
         ),
         Positioned(
           bottom: 10.0,
+          left: 10.0,
           right: 10.0,
-          child: MaterialButton(
-            onPressed: _chooseLocationAction,
-            padding:
-                const EdgeInsets.symmetric(horizontal: 40.0, vertical: 10.0),
-            shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(50.0)),
-            color: Colors.blue.shade400,
-            child: Text(
-              'Pilih lokasi',
-              style: Theme.of(context)
-                  .textTheme
-                  .button!
-                  .copyWith(color: Colors.white),
-            ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              RoundedButton(
+                label: 'Lokasi saya',
+                onPressed: _getLocation,
+              ),
+              RoundedButton(
+                label: 'Pilih lokasi',
+                onPressed: _chooseLocationAction,
+              ),
+            ],
           ),
         ),
       ],
@@ -198,9 +289,14 @@ class _MapRegisterScreenState extends State<MapRegisterScreen> {
                 ),
               ),
               const SizedBox(height: 10.0),
-              TextFormField(
-                maxLines: 3,
-                decoration: Pallette.inputDecoration,
+              Form(
+                key: _formKey,
+                child: TextFormField(
+                  maxLines: 3,
+                  validator: _addressValidator,
+                  controller: _addressController,
+                  decoration: Pallette.inputDecoration,
+                ),
               ),
             ],
           ),

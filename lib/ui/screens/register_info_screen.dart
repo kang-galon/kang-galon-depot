@@ -1,11 +1,36 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:kang_galon_depot/blocs/blocs.dart';
+import 'package:kang_galon_depot/event_states/event_states.dart';
 import 'package:kang_galon_depot/ui/screens/screens.dart';
 
-class InfoRegisterScreen extends StatelessWidget {
-  void _continueAction(BuildContext context) {
+class RegisterInfoScreen extends StatefulWidget {
+  @override
+  _RegisterInfoScreenState createState() => _RegisterInfoScreenState();
+}
+
+class _RegisterInfoScreenState extends State<RegisterInfoScreen> {
+  late DepotBloc _depotBloc;
+  late String _depotName;
+
+  @override
+  void initState() {
+    // init bloc
+    _depotBloc = BlocProvider.of<DepotBloc>(context);
+
+    // set
+    DepotState state = _depotBloc.state;
+    if (state is DepotRegisterInProcess) {
+      _depotName = state.depotRegister.name!;
+    }
+
+    super.initState();
+  }
+
+  void _continueAction() {
     Navigator.pushReplacement(
       context,
-      MaterialPageRoute(builder: (_) => MapRegisterScreen()),
+      MaterialPageRoute(builder: (_) => RegisterMapScreen()),
     );
   }
 
@@ -33,7 +58,7 @@ class InfoRegisterScreen extends StatelessWidget {
               Row(
                 children: [
                   Text(
-                    '1. Nama depot xxx',
+                    '1. Nama depot ' + _depotName,
                     style: Theme.of(context).textTheme.bodyText1,
                   ),
                   const SizedBox(width: 10.0),
@@ -66,7 +91,7 @@ class InfoRegisterScreen extends StatelessWidget {
               Align(
                 alignment: Alignment.bottomRight,
                 child: TextButton(
-                  onPressed: () => _continueAction(context),
+                  onPressed: _continueAction,
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [

@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 
 class Pallette {
+  static EdgeInsets contentPadding =
+      const EdgeInsets.symmetric(vertical: 10.0, horizontal: 30.0);
+
   static BoxDecoration containerBoxDecoration = BoxDecoration(
     borderRadius: BorderRadius.circular(10.0),
     color: Colors.white,

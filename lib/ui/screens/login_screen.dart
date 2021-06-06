@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:kang_galon_depot/ui/configs/pallette.dart';
 import 'package:kang_galon_depot/ui/screens/screens.dart';
+import 'package:kang_galon_depot/ui/widgets/widgets.dart';
 
 class LoginScreen extends StatefulWidget {
   @override
@@ -34,11 +35,11 @@ class _LoginScreenState extends State<LoginScreen> {
 
       String phone = '+62' + _phoneController.text.trim();
 
-      Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(
-            builder: (_) => VerificationOtpScreen(phoneNumber: phone),
-          ));
+      // Navigator.pushReplacement(
+      //     context,
+      //     MaterialPageRoute(
+      //       builder: (_) => VerificationOtpScreen(),
+      //     ));
     }
   }
 
@@ -123,9 +124,9 @@ class _LoginScreenState extends State<LoginScreen> {
                         ),
                       ),
                       const SizedBox(height: 10.0),
-                      ElevatedButton(
+                      NormalButton(
+                        label: 'Masuk',
                         onPressed: _loginAction,
-                        child: Text('Masuk'),
                       ),
                     ],
                   ),
