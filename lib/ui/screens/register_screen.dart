@@ -87,6 +87,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   builder: (_) => VerificationOtpScreen(
                     phoneNumber: phone,
                     verificationId: verificationId,
+                    isLogin: false,
                   ),
                 ));
           },

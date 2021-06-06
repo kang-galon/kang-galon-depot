@@ -11,10 +11,13 @@ import 'package:pinput/pin_put/pin_put.dart';
 class VerificationOtpScreen extends StatefulWidget {
   final String verificationId;
   final String phoneNumber;
+  final bool isLogin;
 
-  const VerificationOtpScreen(
-      {Key? key, required this.verificationId, required this.phoneNumber})
-      : super(key: key);
+  const VerificationOtpScreen({
+    required this.verificationId,
+    required this.phoneNumber,
+    required this.isLogin,
+  });
 
   @override
   _VerificationOtpScreenState createState() => _VerificationOtpScreenState();
@@ -54,10 +57,16 @@ class _VerificationOtpScreenState extends State<VerificationOtpScreen> {
         ),
       );
 
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (_) => RegisterInfoScreen()),
-      );
+      if (widget.isLogin) {
+        Navigator.of(context).pushAndRemoveUntil(
+          MaterialPageRoute(builder: (_) => HomeScreen()),
+          (route) => false,
+        );
+      } else {
+        Navigator.of(context).pushReplacement(
+          MaterialPageRoute(builder: (_) => RegisterInfoScreen()),
+        );
+      }
     }
   }
 

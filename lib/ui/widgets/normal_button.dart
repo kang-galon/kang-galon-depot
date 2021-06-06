@@ -17,23 +17,25 @@ class NormalButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialButton(
-      onPressed: isLoading ? () {} : onPressed!,
-      color: Theme.of(context).accentColor,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(5.0)),
-      elevation: 2.0,
-      highlightElevation: 5.0,
-      child: isLoading
-          ? SizedBox(
-              height: 20.0,
-              width: 20.0,
-              child: CircularProgressIndicator(color: Colors.white),
-            )
-          : Text(label!,
-              style: Theme.of(context)
-                  .textTheme
-                  .button!
-                  .copyWith(color: Colors.white)),
-    );
+    return isLoading
+        ? SizedBox(
+            height: 20.0,
+            width: 20.0,
+            child:
+                CircularProgressIndicator(color: Theme.of(context).accentColor),
+          )
+        : MaterialButton(
+            onPressed: onPressed!,
+            color: Theme.of(context).accentColor,
+            shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(5.0)),
+            elevation: 2.0,
+            highlightElevation: 5.0,
+            child: Text(label!,
+                style: Theme.of(context)
+                    .textTheme
+                    .button!
+                    .copyWith(color: Colors.white)),
+          );
   }
 }
