@@ -1,7 +1,7 @@
 import 'dart:convert';
 
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:http/http.dart' as http;
-import 'package:http_parser/http_parser.dart' as httpParser;
 import 'package:kang_galon_depot/constants/url.dart';
 import 'package:kang_galon_depot/models/models.dart';
 
@@ -25,7 +25,7 @@ class DepotService {
     request.fields['phone_number'] = depotRegister.phoneNumber!;
     request.fields['name'] = depotRegister.name!;
     request.fields['location'] =
-        '${depotRegister.latitude}; ${depotRegister.longitude}';
+        '${depotRegister.latitude}, ${depotRegister.longitude}';
     request.fields['address'] = depotRegister.address!;
     request.fields['price'] = depotRegister.price.toString();
     request.files
@@ -37,9 +37,48 @@ class DepotService {
     var response = await request.send();
     var responseStr = await response.stream.bytesToString();
     var json = jsonDecode(responseStr);
-    print(responseStr);
 
     if (!json['success']) {
+      throw Exception(json['message']);
+    }
+  }
+
+  static Future<Depot> getProfile() async {
+    Uri url = getUrl('/depot');
+    FirebaseAuth firebaseAuth = FirebaseAuth.instance;
+    String token = await firebaseAuth.currentUser!.getIdToken();
+
+    var response = await http.get(url, headers: {
+      'Authorization': 'Bearer $token',
+    });
+    dynamic json = jsonDecode(response.body);
+
+    if (json['success']) {
+      return Depot.fromJson(json['data']);
+    } else {
+      throw Exception(json['message']);
+    }
+  }
+
+  static Future<Depot> updateProfile(Depot depot) async {
+    Uri url = getUrl('/depot');
+    FirebaseAuth firebaseAuth = FirebaseAuth.instance;
+    String token = await firebaseAuth.currentUser!.getIdToken();
+
+    var response = await http.patch(url, headers: {
+      'Authorization': 'Bearer $token'
+    }, body: {
+      'name': depot.name!,
+      'location': '${depot.latitude}, ${depot.longitude}',
+      'address': depot.address!,
+      'price': depot.price.toString(),
+    });
+
+    dynamic json = jsonDecode(response.body);
+
+    if (json['success']) {
+      return Depot.fromJson(json['data']);
+    } else {
       throw Exception(json['message']);
     }
   }

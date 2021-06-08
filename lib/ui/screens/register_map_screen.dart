@@ -94,23 +94,6 @@ class _RegisterMapScreenState extends State<RegisterMapScreen> {
     }
   }
 
-  // void _getAddressLocation() async {
-  //   String address = '';
-
-  //   try {
-  //     List<geocoding.Placemark> placemarks =
-  //         await geocoding.placemarkFromCoordinates(_latitude, _longitude);
-
-  //     geocoding.Placemark placemark = placemarks.first;
-  //     address =
-  //         '${placemark.street}, ${placemark.locality}, ${placemark.subAdministrativeArea}, ${placemark.administrativeArea}, ${placemark.postalCode}';
-  //   } catch (e) {
-  //     print(e);
-  //   }
-
-  //   _addressController.text = address;
-  // }
-
   String? _addressValidator(String? value) {
     if (value != null && value.isEmpty) {
       return 'Wajib diisi';
@@ -148,7 +131,7 @@ class _RegisterMapScreenState extends State<RegisterMapScreen> {
 
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (_) => ProfileScreen()),
+        MaterialPageRoute(builder: (_) => ProfileScreen(isSignIn: false)),
       );
     }
   }

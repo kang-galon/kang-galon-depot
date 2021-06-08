@@ -23,6 +23,29 @@ class DepotRegistered extends DepotEvent {
   List<Object?> get props => [depotRegister];
 }
 
+class DepotGetProfile extends DepotEvent {
+  @override
+  List<Object?> get props => [];
+}
+
+class DepotUpdateProfileProcessed extends DepotEvent {
+  final Depot depot;
+
+  DepotUpdateProfileProcessed({required this.depot});
+
+  @override
+  List<Object?> get props => [depot];
+}
+
+class DepotUpdateProfile extends DepotEvent {
+  final Depot depot;
+
+  DepotUpdateProfile({required this.depot});
+
+  @override
+  List<Object?> get props => [depot];
+}
+
 class DepotCheckExisted extends DepotEvent {
   final String phoneNumber;
 

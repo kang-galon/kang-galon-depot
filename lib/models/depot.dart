@@ -1,18 +1,18 @@
-import 'dart:io';
-
 class Depot {
   String? name;
   String? phoneNumber;
-  String? image;
+  String? uid;
   double? latitude;
   double? longitude;
   String? address;
   int price;
+  String? image;
   bool isOpen;
 
   Depot({
     this.name,
     this.phoneNumber,
+    this.uid,
     this.image,
     this.latitude,
     this.longitude,
@@ -21,52 +21,53 @@ class Depot {
     this.isOpen = true,
   });
 
-  factory Depot.merge(Depot depot, Depot target) {
-    depot.name = target.name ?? depot.name;
-    depot.phoneNumber = target.phoneNumber ?? depot.phoneNumber;
-    depot.image = target.image ?? depot.image;
-    depot.latitude = target.latitude ?? depot.latitude;
-    depot.longitude = target.longitude ?? depot.longitude;
-    depot.address = target.address ?? depot.address;
-    depot.price = target.price;
-
-    return depot;
+  factory Depot.fromJson(dynamic json) {
+    return Depot(
+      name: json['name'],
+      uid: json['uid'],
+      phoneNumber: json['phone_number'],
+      latitude: json['latitude'],
+      longitude: json['longitude'],
+      address: json['address'],
+      image: json['image'],
+      price: json['price'],
+      isOpen: json['is_open'] == 1, // if == 1 true
+    );
   }
 }
 
-class DepotRegister {
-  String? name;
-  String? phoneNumber;
-  double? latitude;
-  double? longitude;
-  String? address;
-  int price;
-  String? image;
-  String? uid;
+class DepotRegister extends Depot {
   String? deviceId;
   String? token;
 
   DepotRegister({
-    this.name,
-    this.phoneNumber,
-    this.image,
-    this.latitude,
-    this.longitude,
-    this.address,
-    this.uid,
+    String? name,
+    String? phoneNumber,
+    String? uid,
+    String? image,
+    double? latitude,
+    double? longitude,
+    String? address,
     this.deviceId,
     this.token,
-    this.price = 5000,
-  });
+  }) : super(
+          name: name,
+          phoneNumber: phoneNumber,
+          uid: uid,
+          image: image,
+          latitude: latitude,
+          longitude: longitude,
+          address: address,
+        );
 
   factory DepotRegister.merge(DepotRegister depot, DepotRegister target) {
     depot.name = target.name ?? depot.name;
     depot.phoneNumber = target.phoneNumber ?? depot.phoneNumber;
-    depot.image = target.image ?? depot.image;
     depot.latitude = target.latitude ?? depot.latitude;
     depot.longitude = target.longitude ?? depot.longitude;
     depot.address = target.address ?? depot.address;
     depot.price = target.price;
+    depot.image = target.image ?? depot.image;
     depot.uid = target.uid ?? depot.uid;
     depot.deviceId = target.deviceId ?? depot.deviceId;
     depot.token = target.token ?? depot.token;

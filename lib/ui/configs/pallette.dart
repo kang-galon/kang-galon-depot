@@ -4,6 +4,12 @@ class Pallette {
   static EdgeInsets contentPadding =
       const EdgeInsets.symmetric(vertical: 10.0, horizontal: 30.0);
 
+  static EdgeInsets contentPadding2 = const EdgeInsets.all(10.0);
+
+  static Color shimmerBaseColor = Colors.grey.shade300;
+
+  static Color shimmerHighlightColor = Colors.grey.shade100;
+
   static BoxDecoration containerBoxDecoration = BoxDecoration(
     borderRadius: BorderRadius.circular(10.0),
     color: Colors.white,

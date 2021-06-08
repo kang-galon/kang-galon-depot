@@ -33,6 +33,24 @@ class DepotRegisteredSuccess extends DepotState {
   List<Object?> get props => [];
 }
 
+class DepotGetProfileSuccess extends DepotState {
+  final Depot depot;
+
+  DepotGetProfileSuccess({required this.depot});
+
+  @override
+  List<Object?> get props => [depot];
+}
+
+class DepotUpdateProfileInProcess extends DepotState {
+  final Depot depot;
+
+  DepotUpdateProfileInProcess({required this.depot});
+
+  @override
+  List<Object?> get props => [depot];
+}
+
 class DepotExistence extends DepotState {
   final bool isExist;
 

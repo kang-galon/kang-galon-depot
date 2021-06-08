@@ -6,7 +6,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:kang_galon_depot/blocs/blocs.dart';
 import 'package:kang_galon_depot/constants/enum.dart';
-import 'package:kang_galon_depot/constants/value.dart';
 import 'package:kang_galon_depot/event_states/event_states.dart';
 import 'package:kang_galon_depot/helpers/map.dart';
 import 'package:kang_galon_depot/models/depot.dart';
@@ -15,8 +14,15 @@ import 'package:kang_galon_depot/ui/widgets/widgets.dart';
 
 class ProfileEditScreen extends StatefulWidget {
   final ProfileEditSection section;
+  final Depot depot;
+  final bool isSignIn;
 
-  const ProfileEditScreen({Key? key, required this.section}) : super(key: key);
+  const ProfileEditScreen({
+    Key? key,
+    required this.section,
+    required this.depot,
+    required this.isSignIn,
+  }) : super(key: key);
 
   @override
   _ProfileEditScreenState createState() => _ProfileEditScreenState();
@@ -27,7 +33,7 @@ class _ProfileEditScreenState extends State<ProfileEditScreen> {
   late DepotBloc _depotBloc;
   late Completer<GoogleMapController> _controller;
   late TextEditingController _textEditingController;
-  late DepotRegister _depotRegister;
+  late Depot _depot;
   late double _latitude;
   late double _longitude;
   late bool _isCameraMove;
@@ -42,25 +48,20 @@ class _ProfileEditScreenState extends State<ProfileEditScreen> {
     _formKey = GlobalKey();
     _textEditingController = TextEditingController();
 
+    // set depot
+    _depot = widget.depot;
+
     // set section state
     _section = widget.section;
 
     if (_section == ProfileEditSection.name) {
       // set text controller
-      DepotState state = _depotBloc.state;
-      if (state is DepotRegisterInProcess) {
-        _depotRegister = state.depotRegister;
-        _textEditingController.text = state.depotRegister.name!;
-      }
+      _textEditingController.text = _depot.name!;
     }
 
     if (_section == ProfileEditSection.price) {
       // set text controller
-      DepotState state = _depotBloc.state;
-      if (state is DepotRegisterInProcess) {
-        _depotRegister = state.depotRegister;
-        _textEditingController.text = state.depotRegister.price.toString();
-      }
+      _textEditingController.text = _depot.price.toString();
     }
 
     if (_section == ProfileEditSection.locationMap) {
@@ -69,12 +70,8 @@ class _ProfileEditScreenState extends State<ProfileEditScreen> {
       _isCameraMove = false;
 
       // set latitude longitude
-      DepotState state = _depotBloc.state;
-      if (state is DepotRegisterInProcess) {
-        _depotRegister = state.depotRegister;
-        _latitude = state.depotRegister.latitude!;
-        _longitude = state.depotRegister.longitude!;
-      }
+      _latitude = _depot.latitude!;
+      _longitude = _depot.longitude!;
     }
 
     super.initState();
@@ -103,27 +100,45 @@ class _ProfileEditScreenState extends State<ProfileEditScreen> {
   void _okAction() {
     if (_formKey.currentState!.validate()) {
       if (_section == ProfileEditSection.name) {
-        _depotRegister.name = _textEditingController.text;
+        _depot.name = _textEditingController.text;
 
-        // set bloc
-        _depotBloc.add(DepotRegisterProcessed(depotRegister: _depotRegister));
+        if (widget.isSignIn) {
+          // set bloc
+          _depotBloc.add(DepotUpdateProfileProcessed(depot: _depot));
+        } else {
+          // set bloc
+          _depotBloc.add(
+              DepotRegisterProcessed(depotRegister: _depot as DepotRegister));
+        }
       }
 
       if (_section == ProfileEditSection.price) {
-        _depotRegister.price = int.parse(_textEditingController.text);
+        _depot.price = int.parse(_textEditingController.text);
 
-        // set bloc
-        _depotBloc.add(DepotRegisterProcessed(depotRegister: _depotRegister));
+        if (widget.isSignIn) {
+          // set bloc
+          _depotBloc.add(DepotUpdateProfileProcessed(depot: _depot));
+        } else {
+          // set bloc
+          _depotBloc.add(
+              DepotRegisterProcessed(depotRegister: _depot as DepotRegister));
+        }
       }
 
       if (_section == ProfileEditSection.locationMap ||
           _section == ProfileEditSection.locationAddress) {
-        _depotRegister.address = _textEditingController.text;
-        _depotRegister.latitude = _latitude;
-        _depotRegister.longitude = _longitude;
+        _depot.address = _textEditingController.text;
+        _depot.latitude = _latitude;
+        _depot.longitude = _longitude;
 
-        // set bloc
-        _depotBloc.add(DepotRegisterProcessed(depotRegister: _depotRegister));
+        if (widget.isSignIn) {
+          // set bloc
+          _depotBloc.add(DepotUpdateProfileProcessed(depot: _depot));
+        } else {
+          // set bloc
+          _depotBloc.add(
+              DepotRegisterProcessed(depotRegister: _depot as DepotRegister));
+        }
       }
 
       Navigator.of(context).pop();
@@ -179,7 +194,7 @@ class _ProfileEditScreenState extends State<ProfileEditScreen> {
                 Align(
                   alignment: Alignment.center,
                   child: RoundedButton(
-                    label: 'Ok...',
+                    label: 'Ok',
                     onPressed: _okAction,
                   ),
                 ),
@@ -227,7 +242,7 @@ class _ProfileEditScreenState extends State<ProfileEditScreen> {
                 Align(
                   alignment: Alignment.center,
                   child: RoundedButton(
-                    label: 'Ok...',
+                    label: 'Ok',
                     onPressed: _okAction,
                   ),
                 ),
@@ -316,7 +331,7 @@ class _ProfileEditScreenState extends State<ProfileEditScreen> {
                 Align(
                   alignment: Alignment.center,
                   child: RoundedButton(
-                    label: 'Ok...',
+                    label: 'Ok',
                     onPressed: _okAction,
                   ),
                 ),
