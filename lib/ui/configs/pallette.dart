@@ -10,6 +10,11 @@ class Pallette {
 
   static Color shimmerHighlightColor = Colors.grey.shade100;
 
+  static BoxDecoration shimmerContainerDecoration = BoxDecoration(
+    color: Colors.grey.shade300,
+    borderRadius: BorderRadius.circular(10.0),
+  );
+
   static BoxDecoration containerBoxDecoration = BoxDecoration(
     borderRadius: BorderRadius.circular(10.0),
     color: Colors.white,

@@ -15,6 +15,7 @@ class MyApp extends StatelessWidget {
     return MultiBlocProvider(
       providers: [
         BlocProvider<DepotBloc>(create: (_) => DepotBloc()),
+        BlocProvider<TransactionBloc>(create: (_) => TransactionBloc()),
       ],
       child: MaterialApp(
         title: 'Kang Galon Depot',

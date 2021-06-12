@@ -62,10 +62,7 @@ class ProfileHeader extends StatelessWidget {
                       baseColor: Pallette.shimmerBaseColor,
                       highlightColor: Pallette.shimmerHighlightColor,
                       child: Container(
-                        decoration: BoxDecoration(
-                          color: Colors.grey.shade300,
-                          borderRadius: BorderRadius.circular(10.0),
-                        ),
+                        decoration: Pallette.shimmerContainerDecoration,
                       ),
                     )
                   : Text(
