@@ -1,6 +1,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.kang_galon_depot">
+
    <application
+        android:name=".Application"
         android:label="kang_galon_depot"
         android:icon="@mipmap/ic_launcher">
         <activity

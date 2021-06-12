@@ -26,18 +26,18 @@ class _SplashScreenState extends State<SplashScreen> {
   }
 
   void _initializedFlutterFire() async {
-    try {
-      await Firebase.initializeApp();
-      _firebaseAuth = FirebaseAuth.instance;
+    // try {
+    // await Firebase.initializeApp();
+    _firebaseAuth = FirebaseAuth.instance;
 
-      // await for 3 second
-      await Future.delayed(Duration(seconds: 3));
+    // await for 3 second
+    await Future.delayed(Duration(seconds: 3));
 
-      setState(() => _initialized = true);
-    } catch (e) {
-      print(e);
-      setState(() => _error = true);
-    }
+    setState(() => _initialized = true);
+    // } catch (e) {
+    //   print(e);
+    //   setState(() => _error = true);
+    // }
   }
 
   @override
@@ -48,9 +48,9 @@ class _SplashScreenState extends State<SplashScreen> {
           body: Center(
             child: Builder(
               builder: (context) {
-                if (_error) {
-                  showSnackbar(context, 'Ops... something went wrong');
-                }
+                // if (_error) {
+                //   showSnackbar(context, 'Ops... something went wrong');
+                // }
 
                 return Text('Kang Galon Depot');
               },
