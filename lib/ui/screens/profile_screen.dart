@@ -130,6 +130,40 @@ class _ProfileScreenState extends State<ProfileScreen> {
     }
   }
 
+  void _logoutAction() {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: Text('Logout'),
+          content: Text('Yakin logout ?'),
+          actions: [
+            ElevatedButton(
+              onPressed: () async {
+                await _depotBloc.logout();
+
+                Navigator.of(context).pushAndRemoveUntil(
+                    MaterialPageRoute(
+                      builder: (_) => SplashScreen(),
+                    ),
+                    (route) => false);
+              },
+              child: Text('Iya'),
+            ),
+            const SizedBox(width: 20.0),
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: Text(
+                'Tidak',
+                style: TextStyle(color: Colors.red),
+              ),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   void _profileBlocListener(BuildContext context, DepotState state) {
     if (widget.isSignIn) {
       if (state is DepotUpdateProfileInProcess) _depot = state.depot;
@@ -270,6 +304,16 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         );
                       },
                     ),
+                    const SizedBox(height: 20.0),
+                    widget.isSignIn
+                        ? TextButton(
+                            onPressed: _logoutAction,
+                            child: Text(
+                              'Logout',
+                              style: TextStyle(color: Colors.red),
+                            ),
+                          )
+                        : const SizedBox.shrink(),
                   ],
                 ),
               ),

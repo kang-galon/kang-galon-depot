@@ -122,4 +122,8 @@ class DepotBloc extends Bloc<DepotEvent, DepotState> {
       codeSent: codeSent,
     );
   }
+
+  Future<void> logout() async {
+    await _firebaseAuth.signOut();
+  }
 }
