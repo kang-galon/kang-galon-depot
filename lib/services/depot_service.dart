@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:http/http.dart' as http;
 import 'package:kang_galon_depot/constants/url.dart';
+import 'package:kang_galon_depot/exceptions/unauthorized_exception.dart';
 import 'package:kang_galon_depot/models/models.dart';
 
 class DepotService {
@@ -56,6 +57,9 @@ class DepotService {
     if (json['success']) {
       return Depot.fromJson(json['data']);
     } else {
+      if (response.statusCode == 401) {
+        throw UnauthorizedException(json['message']);
+      }
       throw Exception(json['message']);
     }
   }

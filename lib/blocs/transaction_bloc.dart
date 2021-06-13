@@ -1,10 +1,12 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:kang_galon_depot/blocs/blocs.dart';
 import 'package:kang_galon_depot/event_states/event_states.dart';
 import 'package:kang_galon_depot/models/models.dart';
 import 'package:kang_galon_depot/services/services.dart';
 
 class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
-  TransactionBloc() : super(TransactionUninitialized());
+  final ErrorBloc _errorBloc;
+  TransactionBloc(this._errorBloc) : super(TransactionUninitialized());
 
   @override
   Stream<TransactionState> mapEventToState(TransactionEvent event) async* {
@@ -55,6 +57,8 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
       }
     } catch (e) {
       print(e);
+      _errorBloc.add(ErrorShow(message: e.toString()));
+
       yield TransactionError();
     }
   }

@@ -1,15 +1,18 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:kang_galon_depot/blocs/blocs.dart';
 import 'package:kang_galon_depot/event_states/event_states.dart';
+import 'package:kang_galon_depot/exceptions/unauthorized_exception.dart';
 import 'package:kang_galon_depot/models/models.dart';
 import 'package:kang_galon_depot/services/services.dart';
 
 class DepotBloc extends Bloc<DepotEvent, DepotState> {
   final FirebaseAuth _firebaseAuth;
+  final ErrorBloc _errorBloc;
   DepotRegister? _depotRegister;
 
-  DepotBloc()
+  DepotBloc(this._errorBloc)
       : this._firebaseAuth = FirebaseAuth.instance,
         super(DepotInitial());
 
@@ -102,9 +105,20 @@ class DepotBloc extends Bloc<DepotEvent, DepotState> {
         yield DepotVerifyOTPSuccess(
             token: jwtToken, uid: uid, deviceId: deviceId);
       }
+    } on FirebaseAuthException catch (e) {
+      if (e.code == 'invalid-verification-code') {
+        _errorBloc.add(ErrorShow(message: 'Kode OTP Salah'));
+      }
+      yield DepotError();
+    } on UnauthorizedException {
+      await _firebaseAuth.signOut();
+
+      _errorBloc.add(ErrorUnauthorized());
+      yield DepotError();
     } catch (e) {
       print(e);
 
+      _errorBloc.add(ErrorShow(message: e.toString()));
       yield DepotError();
     }
   }

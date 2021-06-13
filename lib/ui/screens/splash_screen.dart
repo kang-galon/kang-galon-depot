@@ -1,6 +1,10 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:kang_galon_depot/blocs/blocs.dart';
+import 'package:kang_galon_depot/event_states/event_states.dart';
 import 'package:kang_galon_depot/ui/screens/screens.dart';
+import 'package:kang_galon_depot/ui/widgets/snackbar.dart';
 
 class SplashScreen extends StatefulWidget {
   @override
@@ -32,20 +36,34 @@ class _SplashScreenState extends State<SplashScreen> {
 
   @override
   Widget build(BuildContext context) {
-    if (!_initialized) {
-      return SafeArea(
-        child: Scaffold(
-          body: Center(
-            child: Builder(
-              builder: (context) {
-                return Text('Kang Galon Depot');
-              },
-            ),
-          ),
-        ),
-      );
-    }
+    return SafeArea(
+      child: Scaffold(
+        body: BlocListener<ErrorBloc, ErrorState>(
+          listener: (context, state) {
+            // handle unauthorized user and send back to splash screen
+            if (state is ErrorUnauthorizedShowing) {
+              Navigator.of(context).pushAndRemoveUntil(
+                MaterialPageRoute(builder: (_) => SplashScreen()),
+                (route) => false,
+              );
 
+              showSnackbar(context, state.message, isError: true);
+            }
+
+            if (state is ErrorShowing) {
+              showSnackbar(context, state.message, isError: true);
+            }
+          },
+          child: _buildBody(),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildBody() {
+    if (!_initialized) {
+      return Center(child: Text('Kang Galon Depot'));
+    }
     return (_firebaseAuth.currentUser == null) ? LoginScreen() : HomeScreen();
   }
 }

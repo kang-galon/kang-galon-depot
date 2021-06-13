@@ -43,13 +43,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   ImageProvider get _depotImage {
-    if (_depot.image!.contains('http') || _depot.image!.contains('https')) {
-      return CachedNetworkImageProvider(_depot.image!);
-    }
+    if (_depot.image != null) {
+      if (_depot.image!.contains('http') || _depot.image!.contains('https')) {
+        return CachedNetworkImageProvider(_depot.image!);
+      }
 
-    bool isExist = File(_depot.image!).existsSync();
-    if (isExist) {
-      return FileImage(File(_depot.image!));
+      bool isExist = File(_depot.image!).existsSync();
+      if (isExist) {
+        return FileImage(File(_depot.image!));
+      }
     }
 
     return AssetImage('assets/images/shop.png');

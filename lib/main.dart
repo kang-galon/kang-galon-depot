@@ -77,12 +77,16 @@ void main() async {
 }
 
 class MyApp extends StatelessWidget {
+  final ErrorBloc _errorBloc = ErrorBloc();
+
   @override
   Widget build(BuildContext context) {
     return MultiBlocProvider(
       providers: [
-        BlocProvider<DepotBloc>(create: (_) => DepotBloc()),
-        BlocProvider<TransactionBloc>(create: (_) => TransactionBloc()),
+        BlocProvider<ErrorBloc>(create: (_) => _errorBloc),
+        BlocProvider<DepotBloc>(create: (_) => DepotBloc(_errorBloc)),
+        BlocProvider<TransactionBloc>(
+            create: (_) => TransactionBloc(_errorBloc)),
       ],
       child: MaterialApp(
         title: 'Kang Galon Depot',

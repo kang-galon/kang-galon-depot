@@ -378,7 +378,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           alignment: Alignment.center,
                           margin: const EdgeInsets.only(bottom: 10.0),
                           child: Text(
-                            'Jumlah transaksi ${state.transactions.length}',
+                            'Jumlah transaksi saat ini ${state.transactions.length}',
                           ),
                         );
                       } else {
