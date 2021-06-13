@@ -10,6 +10,11 @@ class TransactionCurrentFetch extends TransactionEvent {
   List<Object?> get props => [];
 }
 
+class TransactionHistoryFetch extends TransactionEvent {
+  @override
+  List<Object?> get props => [];
+}
+
 class TransactionTake extends TransactionEvent {
   final Transaction transaction;
   final int gallon;

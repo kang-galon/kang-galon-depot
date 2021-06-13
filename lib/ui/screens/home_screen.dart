@@ -94,9 +94,23 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   void _historyAction() {
-    FirebaseAuth.instance.currentUser!
-        .getIdToken()
-        .then((value) => print(value));
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (_) => BlocProvider<TransactionHistoryBloc>(
+            create: (_) => TransactionHistoryBloc(),
+            child: TransactionHistoryScreen()),
+      ),
+    );
+  }
+
+  void _detailAction(Transaction transaction) {
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (_) => BlocProvider<TransactionDetailBloc>(
+            create: (_) => TransactionDetailBloc(transaction, _transactionBloc),
+            child: TransactionDetailScreen()),
+      ),
+    );
   }
 
   void _confirmAction(Transaction transaction) {
@@ -248,16 +262,6 @@ class _HomeScreenState extends State<HomeScreen> {
             ],
           );
         });
-  }
-
-  void _detailAction(Transaction transaction) {
-    Navigator.of(context).push(
-      MaterialPageRoute(
-        builder: (_) => BlocProvider(
-            create: (_) => TransactionDetailBloc(transaction, _transactionBloc),
-            child: TransactionDetailScreen()),
-      ),
-    );
   }
 
   @override

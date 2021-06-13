@@ -80,6 +80,23 @@ class TransactionService {
     if (!json['success']) throw new Exception(json['message']);
   }
 
+  static Future<List<Transaction>> getHistory() async {
+    Uri url = getUrl('/depot/transaction');
+    FirebaseAuth firebaseAuth = FirebaseAuth.instance;
+    String token = await firebaseAuth.currentUser!.getIdToken();
+
+    var response = await http.get(
+      url,
+      headers: {'Authorization': 'Bearer $token'},
+    );
+
+    dynamic json = jsonDecode(response.body);
+    if (!json['success']) throw new Exception(json['message']);
+
+    List<Transaction> transactions = Transaction.fromJsonToList(json['data']);
+    return transactions;
+  }
+
   static Future<Transaction> getDetail(int id) async {
     Uri url = getUrl('/depot/transaction/$id');
     FirebaseAuth firebaseAuth = FirebaseAuth.instance;

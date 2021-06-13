@@ -28,6 +28,14 @@ class TransactionCurrentFetchSuccess extends TransactionState {
   List<Object?> get props => [transactions];
 }
 
+class TransactionHistoryFetchSuccess extends TransactionState {
+  final List<Transaction> transactions;
+  TransactionHistoryFetchSuccess({required this.transactions});
+
+  @override
+  List<Object?> get props => [transactions];
+}
+
 class TransactionDetailFetchSuccess extends TransactionState {
   final Transaction transaction;
   TransactionDetailFetchSuccess({required this.transaction});
