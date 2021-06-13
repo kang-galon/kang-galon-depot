@@ -162,13 +162,33 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                          vertical: 10.0, horizontal: 40.0),
-                      child: Text(
-                        'Data depot anda',
-                        style: Theme.of(context).textTheme.headline5,
-                      ),
+                    Row(
+                      children: [
+                        widget.isSignIn
+                            ? MaterialButton(
+                                onPressed: () => Navigator.pop(context),
+                                padding: const EdgeInsets.all(10.0),
+                                minWidth: 0.0,
+                                elevation: 8.0,
+                                shape: CircleBorder(),
+                                color: Colors.white,
+                                child: Icon(Icons.arrow_back),
+                              )
+                            : const SizedBox.shrink(),
+                        Expanded(
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(
+                                vertical: 10.0, horizontal: 40.0),
+                            alignment: widget.isSignIn
+                                ? Alignment.topLeft
+                                : Alignment.center,
+                            child: Text(
+                              'Data depot anda',
+                              style: Theme.of(context).textTheme.headline5,
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
                     const SizedBox(height: 20.0),
                     Stack(
@@ -210,10 +230,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         ),
                       ],
                     ),
-                    Text(
-                      'Pilih foto profil depot',
-                      style: Theme.of(context).textTheme.bodyText1,
-                    ),
+                    widget.isSignIn
+                        ? const SizedBox.shrink()
+                        : Text(
+                            'Pilih foto profil depot',
+                            style: Theme.of(context).textTheme.bodyText1,
+                          ),
                     const SizedBox(height: 30.0),
                     _buildInfo(
                       icon: Icons.person,

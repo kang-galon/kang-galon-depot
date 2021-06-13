@@ -62,36 +62,24 @@ class Transaction {
     return transactions;
   }
 
-  // static Transaction fromJsonToModel(dynamic json) {
-  //   Depot depot = Depot(
-  //     phoneNumber: json['depot']['phone_number'],
-  //     image: json['depot']['image'],
-  //     latitude: json['depot']['latitude'],
-  //     longitude: json['depot']['longitude'],
-  //     address: json['depot']['address'],
-  //     rating: double.parse(json['depot']['rating'].toString()),
-  //     price: json['depot']['price'],
-  //     priceDesc: json['depot']['price_description'],
-  //     isOpen: json['depot']['is_open'] == 1 ? true : false,
-  //     isOpenDesc: json['depot']['is_open_description'],
-  //   );
+  factory Transaction.fromJson(dynamic json) {
+    Transaction transaction = Transaction(
+      id: json['id'],
+      depotName: json['depot_name'],
+      depotPhoneNumber: json['depot_phone_number'],
+      clientName: json['client_name'],
+      clientPhoneNumber: json['client_phone_number'],
+      clientLatitude: Helper.getLatitude(json['client_location']),
+      clientLongitude: Helper.getLongitude(json['client_location']),
+      status: json['status'],
+      statusDescription: json['status_description'],
+      totalPrice: json['total_price'],
+      totalPriceDescription: json['total_price_description'],
+      gallon: json['gallon'],
+      rating: double.parse(json['rating'].toString()),
+      createdAt: json['created_at'],
+    );
 
-  //   Transaction transaction = Transaction(
-  //     id: json['id'],
-  //     depotName: json['depot_name'],
-  //     depotPhoneNumber: json['depot_phone_number'],
-  //     clientPhoneNumber: json['client_phone_number'],
-  //     clientLocation: json['client_location'],
-  //     status: json['status'],
-  //     statusDescription: json['status_description'],
-  //     totalPrice: json['total_price'],
-  //     totalPriceDescription: json['total_price_description'],
-  //     gallon: json['gallon'],
-  //     rating: double.parse(json['rating'].toString()),
-  //     createdAt: json['created_at'],
-  //     depot: depot,
-  //   );
-
-  //   return transaction;
-  // }
+    return transaction;
+  }
 }

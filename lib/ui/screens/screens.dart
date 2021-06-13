@@ -7,3 +7,4 @@ export 'register_map_screen.dart';
 export 'profile_screen.dart';
 export 'profile_edit_screen.dart';
 export 'home_screen.dart';
+export 'transaction_detail_screen.dart';

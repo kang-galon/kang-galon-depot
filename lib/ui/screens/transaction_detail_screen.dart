@@ -1,41 +1,56 @@
-import 'package:firebase_auth/firebase_auth.dart';
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:kang_galon_depot/blocs/blocs.dart';
-import 'package:kang_galon_depot/event_states/depot_event.dart';
 import 'package:kang_galon_depot/event_states/event_states.dart';
 import 'package:kang_galon_depot/models/models.dart';
 import 'package:kang_galon_depot/ui/configs/pallette.dart';
-import 'package:kang_galon_depot/ui/screens/screens.dart';
 import 'package:kang_galon_depot/ui/widgets/widgets.dart';
 
-class HomeScreen extends StatefulWidget {
+class TransactionDetailScreen extends StatefulWidget {
   @override
-  _HomeScreenState createState() => _HomeScreenState();
+  _TransactionDetailScreenState createState() =>
+      _TransactionDetailScreenState();
 }
 
-class _HomeScreenState extends State<HomeScreen> {
-  late DepotBloc _depotBloc;
-  late TransactionBloc _transactionBloc;
+class _TransactionDetailScreenState extends State<TransactionDetailScreen> {
+  late TransactionDetailBloc _transactionDetailBloc;
   late GlobalKey<FormState> _formKey;
   late TextEditingController _gallonController;
+  late Transaction _transaction;
+  late Set<Marker> _markers;
+  late double _cameraZoom;
+  late Completer<GoogleMapController> _completerController;
 
   @override
   void initState() {
     // init bloc
-    _depotBloc = BlocProvider.of<DepotBloc>(context);
-    _transactionBloc = BlocProvider.of<TransactionBloc>(context);
+    _transactionDetailBloc = BlocProvider.of<TransactionDetailBloc>(context);
 
     // init form
     _formKey = GlobalKey();
     _gallonController = TextEditingController();
 
-    // get profile
-    _depotBloc.add(DepotGetProfile());
+    // set transaction data
+    TransactionState state = _transactionDetailBloc.state;
+    if (state is TransactionDetailFetchSuccess) {
+      _transaction = state.transaction;
+    }
 
-    // get current transaction
-    _transactionBloc.add(TransactionCurrentFetch());
+    // set
+    _completerController = Completer();
+    _cameraZoom = 20.0;
+    _markers = {};
+    _markers.add(
+      Marker(
+        markerId: MarkerId('client_location'),
+        position:
+            LatLng(_transaction.clientLatitude, _transaction.clientLongitude),
+      ),
+    );
 
     super.initState();
   }
@@ -43,6 +58,7 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void dispose() {
     _gallonController.dispose();
+    _completerController.future.then((value) => value.dispose());
 
     super.dispose();
   }
@@ -53,18 +69,6 @@ class _HomeScreenState extends State<HomeScreen> {
     }
 
     return null;
-  }
-
-  void _profileAction() {
-    Navigator.of(context).push(
-      MaterialPageRoute(builder: (_) => ProfileScreen(isSignIn: true)),
-    );
-  }
-
-  void _historyAction() {
-    FirebaseAuth.instance.currentUser!
-        .getIdToken()
-        .then((value) => print(value));
   }
 
   void _confirmAction(Transaction transaction) {
@@ -102,7 +106,7 @@ class _HomeScreenState extends State<HomeScreen> {
             ElevatedButton(
               onPressed: () {
                 if (_formKey.currentState!.validate()) {
-                  _transactionBloc.add(
+                  _transactionDetailBloc.add(
                     TransactionTake(
                       transaction: transaction,
                       gallon: int.parse(_gallonController.text),
@@ -138,7 +142,7 @@ class _HomeScreenState extends State<HomeScreen> {
             actions: [
               ElevatedButton(
                 onPressed: () {
-                  _transactionBloc
+                  _transactionDetailBloc
                       .add(TransactionSend(transaction: transaction));
 
                   Navigator.pop(context);
@@ -168,7 +172,7 @@ class _HomeScreenState extends State<HomeScreen> {
             actions: [
               ElevatedButton(
                 onPressed: () {
-                  _transactionBloc
+                  _transactionDetailBloc
                       .add(TransactionComplete(transaction: transaction));
 
                   Navigator.pop(context);
@@ -198,7 +202,7 @@ class _HomeScreenState extends State<HomeScreen> {
             actions: [
               ElevatedButton(
                 onPressed: () {
-                  _transactionBloc
+                  _transactionDetailBloc
                       .add(TransactionDeny(transaction: transaction));
 
                   Navigator.pop(context);
@@ -218,106 +222,90 @@ class _HomeScreenState extends State<HomeScreen> {
         });
   }
 
-  void _detailAction(Transaction transaction) {
-    Navigator.of(context).push(
-      MaterialPageRoute(
-        builder: (_) => BlocProvider(
-            create: (_) => TransactionDetailBloc(transaction, _transactionBloc),
-            child: TransactionDetailScreen()),
-      ),
-    );
+  void _clientLocationAction() {
+    if (_completerController.isCompleted) {
+      _completerController.future.then((controller) {
+        controller.animateCamera(CameraUpdate.newCameraPosition(
+          CameraPosition(
+            target: LatLng(
+                _transaction.clientLatitude, _transaction.clientLongitude),
+            zoom: _cameraZoom,
+          ),
+        ));
+      });
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
-        body: NestedScrollView(
-          headerSliverBuilder: (context, innerBoxIsScrolled) {
-            return [
-              SliverPadding(
-                padding: Pallette.contentPadding2,
-                sliver: _buildHeader(),
-              )
-            ];
-          },
-          body: Padding(
-            padding: Pallette.contentPadding2,
-            child: _buildTransaction(),
-          ),
+        body: ListView(
+          padding: Pallette.contentPadding2,
+          physics: BouncingScrollPhysics(),
+          children: [
+            HeaderBar(title: 'Detail Transaksi'),
+            const SizedBox(height: 20.0),
+            BlocBuilder<TransactionDetailBloc, TransactionState>(
+              builder: (context, state) {
+                if (state is TransactionDetailFetchSuccess) {
+                  Transaction transaction = state.transaction;
+                  return TransactionItemDetail(
+                    transaction: transaction,
+                    onConfirmPressed: (transaction.status == 1)
+                        ? _confirmAction
+                        : (transaction.status == 2)
+                            ? _confirmTakeAction
+                            : (transaction.status == 3)
+                                ? _confirmSendAction
+                                : null,
+                    onDenyPressed:
+                        (transaction.status == 1) ? _denyAction : null,
+                  );
+                }
+
+                return TransactionItemDetail.loading();
+              },
+            ),
+            const SizedBox(height: 20.0),
+            _buildMap(),
+          ],
         ),
       ),
     );
   }
 
-  Widget _buildHeader() {
-    return SliverToBoxAdapter(
-      child: BlocBuilder<DepotBloc, DepotState>(
-        builder: (context, state) {
-          if (state is DepotGetProfileSuccess) {
-            return ProfileHeader(
-              name: state.depot.name,
-              image: state.depot.image,
-              onTap: _profileAction,
-            );
-          }
-          return ProfileHeader.loading();
-        },
-      ),
-    );
-  }
-
-  Widget _buildTransaction() {
+  Widget _buildMap() {
     return Container(
-      padding: Pallette.contentPadding2,
       decoration: Pallette.containerBoxDecoration,
-      child: Column(
+      height: 400.0,
+      child: Stack(
         children: [
-          LongButton(
-            text: 'Riwayat transaksi',
-            icon: Icons.history,
-            onPressed: _historyAction,
+          GoogleMap(
+            mapType: MapType.normal,
+            markers: _markers,
+            onMapCreated: (controller) {
+              _completerController.complete(controller);
+            },
+            initialCameraPosition: CameraPosition(
+              target: LatLng(
+                  _transaction.clientLatitude, _transaction.clientLongitude),
+              zoom: _cameraZoom,
+            ),
           ),
-          const SizedBox(height: 10.0),
-          Expanded(
-            child: BlocBuilder<TransactionBloc, TransactionState>(
-              builder: (context, state) {
-                return ListView.builder(
-                  physics: BouncingScrollPhysics(),
-                  itemBuilder: (context, index) {
-                    if (state is TransactionCurrentFetchSuccess) {
-                      if (index == 0) {
-                        return Container(
-                          alignment: Alignment.center,
-                          margin: const EdgeInsets.only(bottom: 10.0),
-                          child: Text(
-                            'Jumlah transaksi ${state.transactions.length}',
-                          ),
-                        );
-                      } else {
-                        Transaction transaction = state.transactions[index - 1];
-                        return TransactionItem(
-                          transaction: transaction,
-                          onDetailPressed: _detailAction,
-                          onConfirmPressed: (transaction.status == 1)
-                              ? _confirmAction
-                              : (transaction.status == 2)
-                                  ? _confirmTakeAction
-                                  : (transaction.status == 3)
-                                      ? _confirmSendAction
-                                      : null,
-                          onDenyPressed:
-                              (transaction.status == 1) ? _denyAction : null,
-                        );
-                      }
-                    }
-                    return TransactionItem.loading();
-                  },
-                  itemCount: (state is TransactionCurrentFetchSuccess)
-                      ? state.transactions.length + 1
-                      : 1,
-                );
-              },
+          Positioned(
+            top: 5,
+            right: -10,
+            child: MaterialButton(
+              onPressed: _clientLocationAction,
+              padding: const EdgeInsets.all(10.0),
+              shape: CircleBorder(),
+              color: Colors.white,
+              child: Icon(
+                Icons.location_searching,
+                size: 20.0,
+                color: Colors.grey.shade800,
+              ),
             ),
           ),
         ],

@@ -79,4 +79,20 @@ class TransactionService {
     dynamic json = jsonDecode(response.body);
     if (!json['success']) throw new Exception(json['message']);
   }
+
+  static Future<Transaction> getDetail(int id) async {
+    Uri url = getUrl('/depot/transaction/$id');
+    FirebaseAuth firebaseAuth = FirebaseAuth.instance;
+    String token = await firebaseAuth.currentUser!.getIdToken();
+
+    var response = await http.get(
+      url,
+      headers: {'Authorization': 'Bearer $token'},
+    );
+
+    dynamic json = jsonDecode(response.body);
+    if (!json['success']) throw new Exception(json['message']);
+
+    return Transaction.fromJson(json['data']);
+  }
 }
