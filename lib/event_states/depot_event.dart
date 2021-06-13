@@ -28,6 +28,15 @@ class DepotGetProfile extends DepotEvent {
   List<Object?> get props => [];
 }
 
+class DepotUpdateStatus extends DepotEvent {
+  final bool status;
+
+  DepotUpdateStatus({required this.status});
+
+  @override
+  List<Object?> get props => [status];
+}
+
 class DepotUpdateProfileProcessed extends DepotEvent {
   final Depot depot;
 

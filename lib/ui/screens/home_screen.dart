@@ -61,6 +61,38 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
+  void _statusDepotAction(bool value) {
+    String status = value ? 'buka' : 'tutup';
+
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: Text('Status depot'),
+          content: Text('Apakah yakin ingin $status depot ?'),
+          actions: [
+            ElevatedButton(
+              onPressed: () {
+                _depotBloc.add(DepotUpdateStatus(status: value));
+
+                Navigator.pop(context);
+              },
+              child: Text('Ok'),
+            ),
+            const SizedBox(width: 20.0),
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: Text(
+                'Batal',
+                style: TextStyle(color: Colors.red),
+              ),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   void _historyAction() {
     FirebaseAuth.instance.currentUser!
         .getIdToken()
@@ -238,7 +270,11 @@ class _HomeScreenState extends State<HomeScreen> {
               SliverPadding(
                 padding: Pallette.contentPadding2,
                 sliver: _buildHeader(),
-              )
+              ),
+              SliverPadding(
+                padding: Pallette.contentPadding2,
+                sliver: _buildStatus(),
+              ),
             ];
           },
           body: Padding(
@@ -263,6 +299,53 @@ class _HomeScreenState extends State<HomeScreen> {
           }
           return ProfileHeader.loading();
         },
+      ),
+    );
+  }
+
+  Widget _buildStatus() {
+    return SliverToBoxAdapter(
+      child: Container(
+        decoration: Pallette.containerBoxDecoration,
+        padding: Pallette.contentPadding2,
+        height: 65.0,
+        child: Row(
+          children: [
+            Expanded(
+              child: Text(
+                'Status depot',
+                style: Theme.of(context).textTheme.bodyText1,
+              ),
+            ),
+            Text(
+              'Tutup',
+              style: Theme.of(context).textTheme.caption,
+            ),
+            BlocBuilder<DepotBloc, DepotState>(
+              builder: (context, state) {
+                if (state is DepotGetProfileSuccess) {
+                  return Switch(
+                    value: state.depot.isOpen,
+                    onChanged: _statusDepotAction,
+                  );
+                }
+
+                return Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                  child: SizedBox(
+                    width: 20.0,
+                    height: 20.0,
+                    child: CircularProgressIndicator(),
+                  ),
+                );
+              },
+            ),
+            Text(
+              'Buka',
+              style: Theme.of(context).textTheme.caption,
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -296,7 +379,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         );
                       } else {
                         Transaction transaction = state.transactions[index - 1];
-                        return TransactionItem(
+                        return TransactionItemCurrent(
                           transaction: transaction,
                           onDetailPressed: _detailAction,
                           onConfirmPressed: (transaction.status == 1)
@@ -311,7 +394,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         );
                       }
                     }
-                    return TransactionItem.loading();
+                    return TransactionItemCurrent.loading();
                   },
                   itemCount: (state is TransactionCurrentFetchSuccess)
                       ? state.transactions.length + 1

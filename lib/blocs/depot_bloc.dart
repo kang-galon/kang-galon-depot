@@ -48,6 +48,19 @@ class DepotBloc extends Bloc<DepotEvent, DepotState> {
         yield DepotGetProfileSuccess(depot: depot);
       }
 
+      if (event is DepotUpdateStatus) {
+        yield DepotLoading();
+
+        if (event.status) {
+          await DepotService.updateStatusOpen();
+        } else {
+          await DepotService.updateStatusClose();
+        }
+
+        Depot depot = await DepotService.getProfile();
+        yield DepotGetProfileSuccess(depot: depot);
+      }
+
       if (event is DepotUpdateProfileProcessed) {
         yield DepotLoading();
 

@@ -4,14 +4,14 @@ import 'package:kang_galon_depot/ui/configs/pallette.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-class TransactionItem extends StatelessWidget {
+class TransactionItemCurrent extends StatelessWidget {
   final Transaction? transaction;
   final Function(Transaction)? onConfirmPressed;
   final Function(Transaction)? onDenyPressed;
   final Function(Transaction)? onDetailPressed;
   final bool isLoading;
 
-  const TransactionItem({
+  const TransactionItemCurrent({
     Key? key,
     required this.transaction,
     required this.onConfirmPressed,
@@ -20,7 +20,7 @@ class TransactionItem extends StatelessWidget {
   })  : this.isLoading = false,
         super(key: key);
 
-  const TransactionItem.loading()
+  const TransactionItemCurrent.loading()
       : this.onConfirmPressed = null,
         this.onDenyPressed = null,
         this.onDetailPressed = null,

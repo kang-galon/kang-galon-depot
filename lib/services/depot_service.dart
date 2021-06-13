@@ -82,4 +82,36 @@ class DepotService {
       throw Exception(json['message']);
     }
   }
+
+  static Future<void> updateStatusOpen() async {
+    Uri url = getUrl('/depot/open');
+    FirebaseAuth firebaseAuth = FirebaseAuth.instance;
+    String token = await firebaseAuth.currentUser!.getIdToken();
+
+    var response = await http.patch(
+      url,
+      headers: {'Authorization': 'Bearer $token'},
+    );
+
+    dynamic json = jsonDecode(response.body);
+    if (!json['success']) {
+      throw Exception(json['message']);
+    }
+  }
+
+  static Future<void> updateStatusClose() async {
+    Uri url = getUrl('/depot/close');
+    FirebaseAuth firebaseAuth = FirebaseAuth.instance;
+    String token = await firebaseAuth.currentUser!.getIdToken();
+
+    var response = await http.patch(
+      url,
+      headers: {'Authorization': 'Bearer $token'},
+    );
+
+    dynamic json = jsonDecode(response.body);
+    if (!json['success']) {
+      throw Exception(json['message']);
+    }
+  }
 }
