@@ -1,4 +1,3 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -9,6 +8,7 @@ import 'package:kang_galon_depot/models/models.dart';
 import 'package:kang_galon_depot/ui/configs/pallette.dart';
 import 'package:kang_galon_depot/ui/screens/screens.dart';
 import 'package:kang_galon_depot/ui/widgets/widgets.dart';
+import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 class HomeScreen extends StatefulWidget {
   @override
@@ -20,6 +20,7 @@ class _HomeScreenState extends State<HomeScreen> {
   late TransactionBloc _transactionBloc;
   late GlobalKey<FormState> _formKey;
   late TextEditingController _gallonController;
+  late RefreshController _refreshController;
 
   @override
   void initState() {
@@ -29,7 +30,10 @@ class _HomeScreenState extends State<HomeScreen> {
 
     // init form
     _formKey = GlobalKey();
+
+    // init controller
     _gallonController = TextEditingController();
+    _refreshController = RefreshController(initialRefresh: false);
 
     // get profile
     _depotBloc.add(DepotGetProfile());
@@ -53,6 +57,16 @@ class _HomeScreenState extends State<HomeScreen> {
     }
 
     return null;
+  }
+
+  void _onRefresh() {
+    _transactionBloc.add(TransactionCurrentFetch());
+  }
+
+  void _transactionListener(BuildContext context, TransactionState state) {
+    if (state is TransactionCurrentFetchSuccess) {
+      _refreshController.refreshCompleted();
+    }
   }
 
   void _profileAction() {
@@ -367,42 +381,48 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
           const SizedBox(height: 10.0),
           Expanded(
-            child: BlocBuilder<TransactionBloc, TransactionState>(
+            child: BlocConsumer<TransactionBloc, TransactionState>(
+              listener: _transactionListener,
               builder: (context, state) {
-                return ListView.builder(
-                  physics: BouncingScrollPhysics(),
-                  itemBuilder: (context, index) {
-                    if (state is TransactionCurrentFetchSuccess) {
-                      if (index == 0) {
-                        return Container(
-                          alignment: Alignment.center,
-                          margin: const EdgeInsets.only(bottom: 10.0),
-                          child: Text(
-                            'Jumlah transaksi saat ini ${state.transactions.length}',
-                          ),
-                        );
-                      } else {
-                        Transaction transaction = state.transactions[index - 1];
-                        return TransactionItemCurrent(
-                          transaction: transaction,
-                          onDetailPressed: _detailAction,
-                          onConfirmPressed: (transaction.status == 1)
-                              ? _confirmAction
-                              : (transaction.status == 2)
-                                  ? _confirmTakeAction
-                                  : (transaction.status == 3)
-                                      ? _confirmSendAction
-                                      : null,
-                          onDenyPressed:
-                              (transaction.status == 1) ? _denyAction : null,
-                        );
+                return SmartRefresher(
+                  controller: _refreshController,
+                  onRefresh: _onRefresh,
+                  child: ListView.builder(
+                    physics: BouncingScrollPhysics(),
+                    itemBuilder: (context, index) {
+                      if (state is TransactionCurrentFetchSuccess) {
+                        if (index == 0) {
+                          return Container(
+                            alignment: Alignment.center,
+                            margin: const EdgeInsets.only(bottom: 10.0),
+                            child: Text(
+                              'Jumlah transaksi saat ini ${state.transactions.length}',
+                            ),
+                          );
+                        } else {
+                          Transaction transaction =
+                              state.transactions[index - 1];
+                          return TransactionItemCurrent(
+                            transaction: transaction,
+                            onDetailPressed: _detailAction,
+                            onConfirmPressed: (transaction.status == 1)
+                                ? _confirmAction
+                                : (transaction.status == 2)
+                                    ? _confirmTakeAction
+                                    : (transaction.status == 3)
+                                        ? _confirmSendAction
+                                        : null,
+                            onDenyPressed:
+                                (transaction.status == 1) ? _denyAction : null,
+                          );
+                        }
                       }
-                    }
-                    return TransactionItemCurrent.loading();
-                  },
-                  itemCount: (state is TransactionCurrentFetchSuccess)
-                      ? state.transactions.length + 1
-                      : 1,
+                      return TransactionItemCurrent.loading();
+                    },
+                    itemCount: (state is TransactionCurrentFetchSuccess)
+                        ? state.transactions.length + 1
+                        : 1,
+                  ),
                 );
               },
             ),
