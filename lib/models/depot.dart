@@ -5,7 +5,9 @@ class Depot {
   double? latitude;
   double? longitude;
   String? address;
+  double? rating;
   int price;
+  String? priceDesc;
   String? image;
   bool isOpen;
 
@@ -17,7 +19,9 @@ class Depot {
     this.latitude,
     this.longitude,
     this.address,
+    this.rating,
     this.price = 5000,
+    this.priceDesc,
     this.isOpen = true,
   });
 
@@ -29,8 +33,10 @@ class Depot {
       latitude: json['latitude'],
       longitude: json['longitude'],
       address: json['address'],
+      rating: double.parse(json['rating'].toString()),
       image: json['image'],
       price: json['price'],
+      priceDesc: json['price_description'],
       isOpen: json['is_open'] == 1, // if == 1 true
     );
   }

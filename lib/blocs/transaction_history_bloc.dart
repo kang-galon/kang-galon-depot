@@ -19,7 +19,8 @@ class TransactionHistoryBloc extends Bloc<TransactionEvent, TransactionState> {
         yield TransactionHistoryFetchSuccess(transactions: transactions);
       }
     } catch (e) {
-      print(e);
+      print('TransactionHistoryBloc - $e');
+
       yield TransactionError();
     }
   }

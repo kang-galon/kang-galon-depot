@@ -9,6 +9,7 @@ class TransactionItemCurrent extends StatelessWidget {
   final Function(Transaction)? onConfirmPressed;
   final Function(Transaction)? onDenyPressed;
   final Function(Transaction)? onDetailPressed;
+  final Function(Transaction)? onChatAction;
   final bool isLoading;
 
   const TransactionItemCurrent({
@@ -17,6 +18,7 @@ class TransactionItemCurrent extends StatelessWidget {
     required this.onConfirmPressed,
     required this.onDenyPressed,
     required this.onDetailPressed,
+    required this.onChatAction,
   })  : this.isLoading = false,
         super(key: key);
 
@@ -24,6 +26,7 @@ class TransactionItemCurrent extends StatelessWidget {
       : this.onConfirmPressed = null,
         this.onDenyPressed = null,
         this.onDetailPressed = null,
+        this.onChatAction = null,
         this.transaction = null,
         this.isLoading = true;
 
@@ -178,7 +181,8 @@ class TransactionItemCurrent extends StatelessWidget {
                                   ),
                                   const SizedBox(width: 15.0),
                                   MaterialButton(
-                                    onPressed: () {},
+                                    onPressed: () =>
+                                        onChatAction!(transaction!),
                                     padding: EdgeInsets.zero,
                                     child: Icon(
                                       Icons.chat,

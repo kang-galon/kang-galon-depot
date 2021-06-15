@@ -15,7 +15,6 @@ class Transaction {
   final int gallon;
   final double rating;
   final String createdAt;
-  // final Depot depot;
 
   Transaction({
     required this.id,
@@ -32,7 +31,6 @@ class Transaction {
     required this.gallon,
     required this.rating,
     required this.createdAt,
-    // this.depot,
   });
 
   static List<Transaction> fromJsonToList(dynamic json) {

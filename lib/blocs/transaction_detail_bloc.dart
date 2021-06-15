@@ -55,7 +55,8 @@ class TransactionDetailBloc extends Bloc<TransactionEvent, TransactionState> {
         yield TransactionDetailFetchSuccess(transaction: _transaction);
       }
     } catch (e) {
-      print(e);
+      print('TransactionDetailBloc - $e');
+
       yield TransactionError();
     }
   }

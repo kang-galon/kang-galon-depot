@@ -87,6 +87,7 @@ class MyApp extends StatelessWidget {
         BlocProvider<DepotBloc>(create: (_) => DepotBloc(_errorBloc)),
         BlocProvider<TransactionBloc>(
             create: (_) => TransactionBloc(_errorBloc)),
+        BlocProvider<ChatsBloc>(create: (_) => ChatsBloc(_errorBloc)),
       ],
       child: MaterialApp(
         title: 'Kang Galon Depot',

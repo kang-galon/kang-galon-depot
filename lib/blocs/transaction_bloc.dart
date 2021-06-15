@@ -56,7 +56,7 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
         yield TransactionCurrentFetchSuccess(transactions: transactions);
       }
     } catch (e) {
-      print(e);
+      print('TransactionBloc - $e');
       _errorBloc.add(ErrorShow(message: e.toString()));
 
       yield TransactionError();

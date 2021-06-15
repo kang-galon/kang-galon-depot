@@ -116,7 +116,7 @@ class DepotBloc extends Bloc<DepotEvent, DepotState> {
       _errorBloc.add(ErrorUnauthorized());
       yield DepotError();
     } catch (e) {
-      print(e);
+      print('DepotBloc - $e');
 
       _errorBloc.add(ErrorShow(message: e.toString()));
       yield DepotError();

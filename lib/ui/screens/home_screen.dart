@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -6,6 +7,7 @@ import 'package:kang_galon_depot/event_states/depot_event.dart';
 import 'package:kang_galon_depot/event_states/event_states.dart';
 import 'package:kang_galon_depot/models/models.dart';
 import 'package:kang_galon_depot/ui/configs/pallette.dart';
+import 'package:kang_galon_depot/ui/screens/chats_screen.dart';
 import 'package:kang_galon_depot/ui/screens/screens.dart';
 import 'package:kang_galon_depot/ui/widgets/widgets.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
@@ -278,6 +280,15 @@ class _HomeScreenState extends State<HomeScreen> {
         });
   }
 
+  void _chatAction(Transaction transaction) {
+    // FirebaseAuth.instance.currentUser!
+    //     .getIdToken()
+    //     .then((value) => print(value));
+
+    Navigator.of(context).push(
+        MaterialPageRoute(builder: (_) => ChatsPage(transaction: transaction)));
+  }
+
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -405,6 +416,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           return TransactionItemCurrent(
                             transaction: transaction,
                             onDetailPressed: _detailAction,
+                            onChatAction: _chatAction,
                             onConfirmPressed: (transaction.status == 1)
                                 ? _confirmAction
                                 : (transaction.status == 2)
