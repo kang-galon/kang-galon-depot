@@ -24,7 +24,6 @@ dependencies:
   flutter:
     sdk: flutter
   cached_network_image: ^3.0.0
-  camera: ^0.8.1+1
   cupertino_icons: ^1.0.2
   equatable: ^2.0.2
   firebase_auth: ^1.2.0

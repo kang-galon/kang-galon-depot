@@ -119,89 +119,93 @@ class TransactionItemCurrent extends StatelessWidget {
                         height: 25.0,
                       ),
                     )
-                  : Row(
-                      children: [
-                        transaction!.status == 1 || // menunggu konfirmasi
-                                transaction!.status == 2 || // mengambil galon
-                                transaction!.status == 3 // mengantar galon
-                            ? MaterialButton(
-                                onPressed: () =>
-                                    onConfirmPressed!(transaction!),
-                                padding: EdgeInsets.zero,
-                                color: Colors.white,
-                                shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(10.0)),
-                                elevation: 3.0,
-                                child: (transaction!.status == 1)
-                                    ? Icon(
-                                        Icons.check_circle,
-                                        color: Colors.green,
-                                      )
-                                    : (transaction!.status == 2)
+                  : transaction!.status == 4
+                      ? const SizedBox.shrink()
+                      : Row(
+                          children: [
+                            transaction!.status == 1 || // menunggu konfirmasi
+                                    transaction!.status ==
+                                        2 || // mengambil galon
+                                    transaction!.status == 3 // mengantar galon
+                                ? MaterialButton(
+                                    onPressed: () =>
+                                        onConfirmPressed!(transaction!),
+                                    padding: EdgeInsets.zero,
+                                    color: Colors.white,
+                                    shape: RoundedRectangleBorder(
+                                        borderRadius:
+                                            BorderRadius.circular(10.0)),
+                                    elevation: 3.0,
+                                    child: (transaction!.status == 1)
                                         ? Icon(
-                                            Icons.two_wheeler,
+                                            Icons.check_circle,
                                             color: Colors.green,
                                           )
-                                        : (transaction!.status == 3)
-                                            ? Row(
-                                                children: [
-                                                  Icon(
-                                                    Icons.two_wheeler,
-                                                    color: Colors.green,
-                                                  ),
-                                                  const SizedBox(width: 5.0),
-                                                  Icon(
-                                                    Icons.my_location,
-                                                    color: Colors.green,
-                                                  )
-                                                ],
+                                        : (transaction!.status == 2)
+                                            ? Icon(
+                                                Icons.two_wheeler,
+                                                color: Colors.green,
                                               )
-                                            : null,
-                              )
-                            : const MaterialButton(onPressed: null),
-                        Expanded(
-                          child: Align(
-                            alignment: Alignment.centerRight,
-                            child: MaterialButton(
-                              onPressed: _phoneAction,
-                              padding: EdgeInsets.zero,
-                              child: Icon(
-                                Icons.phone,
-                                color: Theme.of(context).accentColor,
+                                            : (transaction!.status == 3)
+                                                ? Row(
+                                                    children: [
+                                                      Icon(
+                                                        Icons.two_wheeler,
+                                                        color: Colors.green,
+                                                      ),
+                                                      const SizedBox(
+                                                          width: 5.0),
+                                                      Icon(
+                                                        Icons.my_location,
+                                                        color: Colors.green,
+                                                      )
+                                                    ],
+                                                  )
+                                                : null,
+                                  )
+                                : const MaterialButton(onPressed: null),
+                            Expanded(
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  MaterialButton(
+                                    onPressed: _phoneAction,
+                                    padding: EdgeInsets.zero,
+                                    child: Icon(
+                                      Icons.phone,
+                                      color: Theme.of(context).accentColor,
+                                    ),
+                                  ),
+                                  const SizedBox(width: 15.0),
+                                  MaterialButton(
+                                    onPressed: () {},
+                                    padding: EdgeInsets.zero,
+                                    child: Icon(
+                                      Icons.chat,
+                                      color: Theme.of(context).accentColor,
+                                    ),
+                                  ),
+                                ],
                               ),
                             ),
-                          ),
+                            transaction!.status == 1
+                                ? MaterialButton(
+                                    onPressed: () =>
+                                        onDenyPressed!(transaction!),
+                                    padding: EdgeInsets.zero,
+                                    color: Colors.white,
+                                    shape: RoundedRectangleBorder(
+                                        borderRadius:
+                                            BorderRadius.circular(10.0)),
+                                    elevation: 3.0,
+                                    child: Icon(
+                                      Icons.delete,
+                                      color: Colors.red,
+                                    ),
+                                  )
+                                : const MaterialButton(onPressed: null),
+                          ],
                         ),
-                        const SizedBox(width: 15.0),
-                        Expanded(
-                          child: Align(
-                            alignment: Alignment.centerLeft,
-                            child: MaterialButton(
-                              onPressed: () {},
-                              padding: EdgeInsets.zero,
-                              child: Icon(
-                                Icons.chat,
-                                color: Theme.of(context).accentColor,
-                              ),
-                            ),
-                          ),
-                        ),
-                        transaction!.status == 1
-                            ? MaterialButton(
-                                onPressed: () => onDenyPressed!(transaction!),
-                                padding: EdgeInsets.zero,
-                                color: Colors.white,
-                                shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(10.0)),
-                                elevation: 3.0,
-                                child: Icon(
-                                  Icons.delete,
-                                  color: Colors.red,
-                                ),
-                              )
-                            : const MaterialButton(onPressed: null),
-                      ],
-                    ),
               const Divider(),
             ],
           ),
