@@ -79,7 +79,14 @@ class _RegisterScreenState extends State<RegisterScreen> {
         await _depotBloc.sendOtp(
           phone,
           (err) {
-            showSnackbar(context, 'OTP gagal dikirim', isError: true);
+            print(err);
+            if (err.code == 'too-many-requests') {
+              showSnackbar(
+                  context, 'OTP gagal dikirim, permintaan terlalu banyak',
+                  isError: true);
+            } else {
+              showSnackbar(context, 'OTP gagal dikirim', isError: true);
+            }
           },
           (verificationId, forceResendingToken) {
             showSnackbar(context, 'OTP berhasil dikirim');
