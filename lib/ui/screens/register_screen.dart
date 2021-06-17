@@ -8,6 +8,7 @@ import 'package:kang_galon_depot/models/models.dart';
 import 'package:kang_galon_depot/ui/configs/pallette.dart';
 import 'package:kang_galon_depot/ui/screens/screens.dart';
 import 'package:kang_galon_depot/ui/widgets/normal_button.dart';
+import 'package:kang_galon_depot/ui/widgets/widgets.dart';
 
 class RegisterScreen extends StatefulWidget {
   @override
@@ -78,9 +79,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
         await _depotBloc.sendOtp(
           phone,
           (err) {
-            print(err);
+            showSnackbar(context, 'OTP gagal dikirim', isError: true);
           },
           (verificationId, forceResendingToken) {
+            showSnackbar(context, 'OTP berhasil dikirim');
             Navigator.pushReplacement(
                 context,
                 MaterialPageRoute(
