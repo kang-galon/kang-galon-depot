@@ -9,3 +9,4 @@ export 'profile_edit_screen.dart';
 export 'home_screen.dart';
 export 'transaction_detail_screen.dart';
 export 'transaction_history_screen.dart';
+export 'chats_screen.dart';

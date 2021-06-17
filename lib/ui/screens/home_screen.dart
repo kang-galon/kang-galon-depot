@@ -7,7 +7,6 @@ import 'package:kang_galon_depot/event_states/depot_event.dart';
 import 'package:kang_galon_depot/event_states/event_states.dart';
 import 'package:kang_galon_depot/models/models.dart';
 import 'package:kang_galon_depot/ui/configs/pallette.dart';
-import 'package:kang_galon_depot/ui/screens/chats_screen.dart';
 import 'package:kang_galon_depot/ui/screens/screens.dart';
 import 'package:kang_galon_depot/ui/widgets/widgets.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';

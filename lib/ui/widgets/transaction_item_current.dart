@@ -38,182 +38,185 @@ class TransactionItemCurrent extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Material(
-      color: Colors.transparent,
-      borderRadius: BorderRadius.circular(10.0),
-      child: InkWell(
-        onTap: () => onDetailPressed!(transaction!),
-        borderRadius: BorderRadius.circular(10.0),
-        child: Container(
-          padding: const EdgeInsets.all(5.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              isLoading
-                  ? Shimmer.fromColors(
-                      baseColor: Pallette.shimmerBaseColor,
-                      highlightColor: Pallette.shimmerHighlightColor,
-                      child: Container(
-                        decoration: Pallette.shimmerContainerDecoration,
-                        height: 15.0,
-                      ),
-                    )
-                  : Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                          transaction!.clientName,
-                          style: Theme.of(context).textTheme.bodyText1,
-                        ),
-                        Icon(
-                          Icons.chevron_right,
-                          color: Theme.of(context).accentColor,
-                        ),
-                      ],
-                    ),
-              const SizedBox(height: 10.0),
-              isLoading
-                  ? Shimmer.fromColors(
-                      baseColor: Pallette.shimmerBaseColor,
-                      highlightColor: Pallette.shimmerHighlightColor,
-                      child: Container(
-                        decoration: Pallette.shimmerContainerDecoration,
-                        height: 25.0,
-                      ),
-                    )
-                  : Column(
-                      children: [
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text('${transaction!.gallon} Gallon',
-                                style: Theme.of(context).textTheme.bodyText1),
-                            Text(transaction!.totalPriceDescription,
-                                style: Theme.of(context).textTheme.bodyText1),
-                          ],
-                        ),
-                        const SizedBox(height: 5.0),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text(
-                              transaction!.statusDescription,
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .caption!
-                                  .copyWith(
-                                      color: Theme.of(context).accentColor),
-                            ),
-                            Text(
-                              transaction!.createdAt,
-                              style: Theme.of(context).textTheme.caption,
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
-              const SizedBox(height: 10.0),
-              isLoading
-                  ? Shimmer.fromColors(
-                      baseColor: Pallette.shimmerBaseColor,
-                      highlightColor: Pallette.shimmerHighlightColor,
-                      child: Container(
-                        decoration: Pallette.shimmerContainerDecoration,
-                        height: 25.0,
-                      ),
-                    )
-                  : transaction!.status == 4
-                      ? const SizedBox.shrink()
+    return Container(
+      padding: const EdgeInsets.all(5.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Material(
+            color: Colors.transparent,
+            borderRadius: BorderRadius.circular(10.0),
+            child: InkWell(
+              onTap: () => onDetailPressed!(transaction!),
+              borderRadius: BorderRadius.circular(10.0),
+              child: Column(
+                children: [
+                  isLoading
+                      ? Shimmer.fromColors(
+                          baseColor: Pallette.shimmerBaseColor,
+                          highlightColor: Pallette.shimmerHighlightColor,
+                          child: Container(
+                            decoration: Pallette.shimmerContainerDecoration,
+                            height: 15.0,
+                          ),
+                        )
                       : Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            transaction!.status == 1 || // menunggu konfirmasi
-                                    transaction!.status ==
-                                        2 || // mengambil galon
-                                    transaction!.status == 3 // mengantar galon
-                                ? MaterialButton(
-                                    onPressed: () =>
-                                        onConfirmPressed!(transaction!),
-                                    padding: EdgeInsets.zero,
-                                    color: Colors.white,
-                                    shape: RoundedRectangleBorder(
-                                        borderRadius:
-                                            BorderRadius.circular(10.0)),
-                                    elevation: 3.0,
-                                    child: (transaction!.status == 1)
+                            Text(
+                              transaction!.clientName,
+                              style: Theme.of(context).textTheme.bodyText1,
+                            ),
+                            Icon(
+                              Icons.chevron_right,
+                              color: Theme.of(context).accentColor,
+                            ),
+                          ],
+                        ),
+                  const SizedBox(height: 10.0),
+                  isLoading
+                      ? Shimmer.fromColors(
+                          baseColor: Pallette.shimmerBaseColor,
+                          highlightColor: Pallette.shimmerHighlightColor,
+                          child: Container(
+                            decoration: Pallette.shimmerContainerDecoration,
+                            height: 25.0,
+                          ),
+                        )
+                      : Column(
+                          children: [
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Text('${transaction!.gallon} Gallon',
+                                    style:
+                                        Theme.of(context).textTheme.bodyText1),
+                                Text(transaction!.totalPriceDescription,
+                                    style:
+                                        Theme.of(context).textTheme.bodyText1),
+                              ],
+                            ),
+                            const SizedBox(height: 5.0),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Text(
+                                  transaction!.statusDescription,
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .caption!
+                                      .copyWith(
+                                          color: Theme.of(context).accentColor),
+                                ),
+                                Text(
+                                  transaction!.createdAt,
+                                  style: Theme.of(context).textTheme.caption,
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                ],
+              ),
+            ),
+          ),
+          const SizedBox(height: 10.0),
+          isLoading
+              ? Shimmer.fromColors(
+                  baseColor: Pallette.shimmerBaseColor,
+                  highlightColor: Pallette.shimmerHighlightColor,
+                  child: Container(
+                    decoration: Pallette.shimmerContainerDecoration,
+                    height: 25.0,
+                  ),
+                )
+              : transaction!.status == 4
+                  ? const SizedBox.shrink()
+                  : Row(
+                      children: [
+                        // menunggu konfirmasi
+                        transaction!.status == 1 ||
+                                // mengambil galon
+                                transaction!.status == 2 ||
+                                // mengantar galon
+                                transaction!.status == 3
+                            ? MaterialButton(
+                                onPressed: () =>
+                                    onConfirmPressed!(transaction!),
+                                padding: EdgeInsets.zero,
+                                color: Colors.white,
+                                shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(10.0)),
+                                elevation: 3.0,
+                                child: (transaction!.status == 1)
+                                    ? Icon(
+                                        Icons.check_circle,
+                                        color: Colors.green,
+                                      )
+                                    : (transaction!.status == 2)
                                         ? Icon(
-                                            Icons.check_circle,
+                                            Icons.two_wheeler,
                                             color: Colors.green,
                                           )
-                                        : (transaction!.status == 2)
-                                            ? Icon(
-                                                Icons.two_wheeler,
-                                                color: Colors.green,
-                                              )
-                                            : (transaction!.status == 3)
-                                                ? Row(
-                                                    children: [
-                                                      Icon(
-                                                        Icons.two_wheeler,
-                                                        color: Colors.green,
-                                                      ),
-                                                      const SizedBox(
-                                                          width: 5.0),
-                                                      Icon(
-                                                        Icons.my_location,
-                                                        color: Colors.green,
-                                                      )
-                                                    ],
+                                        : (transaction!.status == 3)
+                                            ? Row(
+                                                children: [
+                                                  Icon(
+                                                    Icons.two_wheeler,
+                                                    color: Colors.green,
+                                                  ),
+                                                  const SizedBox(width: 5.0),
+                                                  Icon(
+                                                    Icons.my_location,
+                                                    color: Colors.green,
                                                   )
-                                                : null,
-                                  )
-                                : const MaterialButton(onPressed: null),
-                            Expanded(
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  MaterialButton(
-                                    onPressed: _phoneAction,
-                                    padding: EdgeInsets.zero,
-                                    child: Icon(
-                                      Icons.phone,
-                                      color: Theme.of(context).accentColor,
-                                    ),
-                                  ),
-                                  const SizedBox(width: 15.0),
-                                  MaterialButton(
-                                    onPressed: () =>
-                                        onChatAction!(transaction!),
-                                    padding: EdgeInsets.zero,
-                                    child: Icon(
-                                      Icons.chat,
-                                      color: Theme.of(context).accentColor,
-                                    ),
-                                  ),
-                                ],
+                                                ],
+                                              )
+                                            : null,
+                              )
+                            : const MaterialButton(onPressed: null),
+                        Expanded(
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              MaterialButton(
+                                onPressed: _phoneAction,
+                                padding: EdgeInsets.zero,
+                                child: Icon(
+                                  Icons.phone,
+                                  color: Theme.of(context).accentColor,
+                                ),
                               ),
-                            ),
-                            transaction!.status == 1
-                                ? MaterialButton(
-                                    onPressed: () =>
-                                        onDenyPressed!(transaction!),
-                                    padding: EdgeInsets.zero,
-                                    color: Colors.white,
-                                    shape: RoundedRectangleBorder(
-                                        borderRadius:
-                                            BorderRadius.circular(10.0)),
-                                    elevation: 3.0,
-                                    child: Icon(
-                                      Icons.delete,
-                                      color: Colors.red,
-                                    ),
-                                  )
-                                : const MaterialButton(onPressed: null),
-                          ],
+                              const SizedBox(width: 15.0),
+                              MaterialButton(
+                                onPressed: () => onChatAction!(transaction!),
+                                padding: EdgeInsets.zero,
+                                child: Icon(
+                                  Icons.chat,
+                                  color: Theme.of(context).accentColor,
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
-              const Divider(),
-            ],
-          ),
-        ),
+                        transaction!.status == 1
+                            ? MaterialButton(
+                                onPressed: () => onDenyPressed!(transaction!),
+                                padding: EdgeInsets.zero,
+                                color: Colors.white,
+                                shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(10.0)),
+                                elevation: 3.0,
+                                child: Icon(
+                                  Icons.delete,
+                                  color: Colors.red,
+                                ),
+                              )
+                            : const MaterialButton(onPressed: null),
+                      ],
+                    ),
+          const Divider(),
+        ],
       ),
     );
   }

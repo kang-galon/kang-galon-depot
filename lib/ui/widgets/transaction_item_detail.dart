@@ -8,6 +8,7 @@ class TransactionItemDetail extends StatelessWidget {
   final Transaction? transaction;
   final Function(Transaction)? onConfirmPressed;
   final Function(Transaction)? onDenyPressed;
+  final Function(Transaction)? onChatPressed;
   final bool isLoading;
 
   const TransactionItemDetail({
@@ -15,6 +16,7 @@ class TransactionItemDetail extends StatelessWidget {
     required this.transaction,
     required this.onConfirmPressed,
     required this.onDenyPressed,
+    required this.onChatPressed,
   })  : this.isLoading = false,
         super(key: key);
 
@@ -22,6 +24,7 @@ class TransactionItemDetail extends StatelessWidget {
       : this.transaction = null,
         this.onConfirmPressed = null,
         this.onDenyPressed = null,
+        this.onChatPressed = null,
         this.isLoading = true;
 
   void _phoneAction() {
@@ -144,7 +147,7 @@ class TransactionItemDetail extends StatelessWidget {
                       child: Align(
                         alignment: Alignment.centerRight,
                         child: MaterialButton(
-                          onPressed: () => onDenyPressed!(transaction!),
+                          onPressed: _phoneAction,
                           padding: EdgeInsets.zero,
                           child: Icon(
                             Icons.phone,
@@ -158,7 +161,7 @@ class TransactionItemDetail extends StatelessWidget {
                       child: Align(
                         alignment: Alignment.centerLeft,
                         child: MaterialButton(
-                          onPressed: _phoneAction,
+                          onPressed: () => onChatPressed!(transaction!),
                           padding: EdgeInsets.zero,
                           child: Icon(
                             Icons.chat,
@@ -169,7 +172,7 @@ class TransactionItemDetail extends StatelessWidget {
                     ),
                     transaction!.status == 1
                         ? MaterialButton(
-                            onPressed: () {},
+                            onPressed: () => onDenyPressed!(transaction!),
                             padding: EdgeInsets.zero,
                             color: Colors.white,
                             shape: RoundedRectangleBorder(

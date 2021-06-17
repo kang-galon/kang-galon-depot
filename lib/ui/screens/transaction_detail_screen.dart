@@ -8,6 +8,7 @@ import 'package:kang_galon_depot/blocs/blocs.dart';
 import 'package:kang_galon_depot/event_states/event_states.dart';
 import 'package:kang_galon_depot/models/models.dart';
 import 'package:kang_galon_depot/ui/configs/pallette.dart';
+import 'package:kang_galon_depot/ui/screens/screens.dart';
 import 'package:kang_galon_depot/ui/widgets/widgets.dart';
 
 class TransactionDetailScreen extends StatefulWidget {
@@ -236,6 +237,15 @@ class _TransactionDetailScreenState extends State<TransactionDetailScreen> {
     }
   }
 
+  void _chatAction(Transaction transaction) {
+    // FirebaseAuth.instance.currentUser!
+    //     .getIdToken()
+    //     .then((value) => print(value));
+
+    Navigator.of(context).push(
+        MaterialPageRoute(builder: (_) => ChatsPage(transaction: transaction)));
+  }
+
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -252,6 +262,7 @@ class _TransactionDetailScreenState extends State<TransactionDetailScreen> {
                   Transaction transaction = state.transaction;
                   return TransactionItemDetail(
                     transaction: transaction,
+                    onChatPressed: _chatAction,
                     onConfirmPressed: (transaction.status == 1)
                         ? _confirmAction
                         : (transaction.status == 2)
