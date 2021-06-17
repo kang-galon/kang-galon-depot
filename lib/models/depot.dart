@@ -37,7 +37,7 @@ class Depot {
       image: json['image'],
       price: json['price'],
       priceDesc: json['price_description'],
-      isOpen: json['is_open'] == 1, // if == 1 true
+      isOpen: json['is_open'] == 1 || json['is_open'], // if == 1 true
     );
   }
 }
