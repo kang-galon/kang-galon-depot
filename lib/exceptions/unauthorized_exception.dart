@@ -3,5 +3,5 @@ class UnauthorizedException implements Exception {
   const UnauthorizedException(this.message);
 
   @override
-  String toString() => 'UnauthException';
+  String toString() => 'UnauthorizedException';
 }

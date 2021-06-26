@@ -73,6 +73,26 @@ class DepotSentOTP extends DepotEvent {
   List<Object?> get props => [phoneNumber];
 }
 
+class DepotSendOTP extends DepotEvent {
+  final String phoneNumber;
+
+  DepotSendOTP({required this.phoneNumber});
+
+  @override
+  List<Object?> get props => [];
+}
+
+class DepotSendOTPSuccessTrigger extends DepotEvent {
+  final String phoneNumber;
+  final String verificationId;
+
+  DepotSendOTPSuccessTrigger(
+      {required this.phoneNumber, required this.verificationId});
+
+  @override
+  List<Object?> get props => [phoneNumber, verificationId];
+}
+
 class DepotVerifyOTP extends DepotEvent {
   final String otp;
   final String verificationId;

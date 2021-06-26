@@ -5,9 +5,9 @@ import 'package:kang_galon_depot/models/models.dart';
 import 'package:kang_galon_depot/services/services.dart';
 
 class ChatsBloc extends Bloc<ChatsEvent, ChatsState> {
-  final ErrorBloc _errorBloc;
+  final SnackbarBloc _snackbarBloc;
 
-  ChatsBloc(this._errorBloc) : super(ChatsUninitialized());
+  ChatsBloc(this._snackbarBloc) : super(ChatsUninitialized());
 
   @override
   Stream<ChatsState> mapEventToState(ChatsEvent event) async* {
@@ -29,7 +29,7 @@ class ChatsBloc extends Bloc<ChatsEvent, ChatsState> {
       }
     } catch (e) {
       print('ChatsBloc - $e');
-      _errorBloc.add(ErrorShow(message: e.toString()));
+      _snackbarBloc.add(SnackbarShow(message: e.toString()));
 
       yield ChatsError();
     }

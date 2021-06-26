@@ -49,7 +49,7 @@ class _LoginScreenState extends State<LoginScreen> {
     }
   }
 
-  void _registerAction() {
+  void _registerAction() async {
     Navigator.push(
       context,
       MaterialPageRoute(builder: (_) => RegisterScreen()),
@@ -68,32 +68,29 @@ class _LoginScreenState extends State<LoginScreen> {
     return null;
   }
 
-  void _loginBlocListener(BuildContext context, DepotState state) async {
+  void _loginBlocListener(BuildContext context, DepotState state) {
     if (state is DepotExistence) {
       // if exist already registered
       if (state.isExist) {
         String phone = '+62' + _phoneController.text.trim();
 
-        await _depotBloc.sendOtp(
-          phone,
-          (err) {
-            print(err);
-          },
-          (verificationId, forceResendingToken) {
-            Navigator.pushReplacement(
-                context,
-                MaterialPageRoute(
-                  builder: (_) => VerificationOtpScreen(
-                    phoneNumber: phone,
-                    verificationId: verificationId,
-                    isLogin: true,
-                  ),
-                ));
-          },
-        );
+        // send otp
+        _depotBloc.add(DepotSendOTP(phoneNumber: phone));
       } else {
         setState(() => _errorText = 'Nomor belum terdaftar');
       }
+    }
+
+    if (state is DepotSentOTPSuccess) {
+      Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (_) => VerificationOtpScreen(
+              phoneNumber: state.phoneNumber,
+              verificationId: state.verificationId,
+              isLogin: true,
+            ),
+          ));
     }
   }
 

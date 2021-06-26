@@ -9,10 +9,10 @@ import 'package:kang_galon_depot/services/services.dart';
 
 class DepotBloc extends Bloc<DepotEvent, DepotState> {
   final FirebaseAuth _firebaseAuth;
-  final ErrorBloc _errorBloc;
+  final SnackbarBloc _snackbarBloc;
   DepotRegister? _depotRegister;
 
-  DepotBloc(this._errorBloc)
+  DepotBloc(this._snackbarBloc)
       : this._firebaseAuth = FirebaseAuth.instance,
         super(DepotInitial());
 
@@ -86,6 +86,33 @@ class DepotBloc extends Bloc<DepotEvent, DepotState> {
         yield DepotExistence(isExist: isExist);
       }
 
+      if (event is DepotSendOTP) {
+        yield DepotLoading();
+
+        await _firebaseAuth.verifyPhoneNumber(
+          phoneNumber: event.phoneNumber,
+          verificationCompleted: (credential) {},
+          codeAutoRetrievalTimeout: (verificationId) {},
+          verificationFailed: (err) => throw err,
+          codeSent: (verificationId, forceResendingToken) {
+            this.add(
+              DepotSendOTPSuccessTrigger(
+                  phoneNumber: event.phoneNumber,
+                  verificationId: verificationId),
+            );
+          },
+        );
+      }
+
+      if (event is DepotSendOTPSuccessTrigger) {
+        _snackbarBloc
+            .add(SnackbarShow(message: 'OTP berhasil dikirm', isError: false));
+
+        yield DepotSentOTPSuccess(
+            phoneNumber: event.phoneNumber,
+            verificationId: event.verificationId);
+      }
+
       if (event is DepotVerifyOTP) {
         yield DepotLoading();
 
@@ -107,34 +134,26 @@ class DepotBloc extends Bloc<DepotEvent, DepotState> {
       }
     } on FirebaseAuthException catch (e) {
       if (e.code == 'invalid-verification-code') {
-        _errorBloc.add(ErrorShow(message: 'Kode OTP Salah'));
+        _snackbarBloc.add(SnackbarShow(message: 'Kode OTP Salah'));
+      } else if (e.code == 'too-many-requests') {
+        _snackbarBloc.add(SnackbarShow(
+            message: 'OTP gagal dikirim, permintaan terlalu banyak'));
+      } else {
+        _snackbarBloc.add(SnackbarShow(message: 'OTP gagal dikirim'));
       }
+
       yield DepotError();
     } on UnauthorizedException {
       await _firebaseAuth.signOut();
 
-      _errorBloc.add(ErrorUnauthorized());
+      _snackbarBloc.add(SnackbarUnauthorized());
       yield DepotError();
     } catch (e) {
       print('DepotBloc - $e');
 
-      _errorBloc.add(ErrorShow(message: e.toString()));
+      _snackbarBloc.add(SnackbarShow(message: e.toString()));
       yield DepotError();
     }
-  }
-
-  Future<void> sendOtp(
-    String phoneNumber,
-    void Function(FirebaseAuthException) verificationFailed,
-    void Function(String verificationId, int? forceResendingToken) codeSent,
-  ) async {
-    await _firebaseAuth.verifyPhoneNumber(
-      phoneNumber: phoneNumber,
-      verificationCompleted: (PhoneAuthCredential credential) {},
-      codeAutoRetrievalTimeout: (String verificationId) {},
-      verificationFailed: verificationFailed,
-      codeSent: codeSent,
-    );
   }
 
   Future<void> logout() async {

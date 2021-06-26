@@ -60,7 +60,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
     Navigator.pop(context);
   }
 
-  void _registerBlocListener(BuildContext context, DepotState state) async {
+  void _registerBlocListener(BuildContext context, DepotState state) {
     if (state is DepotExistence) {
       // if exist already registered
       if (state.isExist) {
@@ -76,32 +76,22 @@ class _RegisterScreenState extends State<RegisterScreen> {
           ),
         );
 
-        await _depotBloc.sendOtp(
-          phone,
-          (err) {
-            print(err);
-            if (err.code == 'too-many-requests') {
-              showSnackbar(
-                  context, 'OTP gagal dikirim, permintaan terlalu banyak',
-                  isError: true);
-            } else {
-              showSnackbar(context, 'OTP gagal dikirim', isError: true);
-            }
-          },
-          (verificationId, forceResendingToken) {
-            showSnackbar(context, 'OTP berhasil dikirim');
-            Navigator.pushReplacement(
-                context,
-                MaterialPageRoute(
-                  builder: (_) => VerificationOtpScreen(
-                    phoneNumber: phone,
-                    verificationId: verificationId,
-                    isLogin: false,
-                  ),
-                ));
-          },
-        );
+        // send otp
+        _depotBloc.add(DepotSendOTP(phoneNumber: phone));
       }
+    }
+
+    if (state is DepotSentOTPSuccess) {
+      Navigator.pushAndRemoveUntil(
+          context,
+          MaterialPageRoute(
+            builder: (_) => VerificationOtpScreen(
+              phoneNumber: state.phoneNumber,
+              verificationId: state.verificationId,
+              isLogin: false,
+            ),
+          ),
+          (route) => false);
     }
   }
 

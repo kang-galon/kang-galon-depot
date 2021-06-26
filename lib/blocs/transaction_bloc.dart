@@ -1,12 +1,13 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:kang_galon_depot/blocs/blocs.dart';
 import 'package:kang_galon_depot/event_states/event_states.dart';
+import 'package:kang_galon_depot/exceptions/unauthorized_exception.dart';
 import 'package:kang_galon_depot/models/models.dart';
 import 'package:kang_galon_depot/services/services.dart';
 
 class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
-  final ErrorBloc _errorBloc;
-  TransactionBloc(this._errorBloc) : super(TransactionUninitialized());
+  final SnackbarBloc _snackbarBloc;
+  TransactionBloc(this._snackbarBloc) : super(TransactionUninitialized());
 
   @override
   Stream<TransactionState> mapEventToState(TransactionEvent event) async* {
@@ -55,9 +56,13 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
         List<Transaction> transactions = await TransactionService.getCurrent();
         yield TransactionCurrentFetchSuccess(transactions: transactions);
       }
+    } on UnauthorizedException {
+      _snackbarBloc.add(SnackbarUnauthorized());
+
+      yield TransactionError();
     } catch (e) {
       print('TransactionBloc - $e');
-      _errorBloc.add(ErrorShow(message: e.toString()));
+      _snackbarBloc.add(SnackbarShow(message: e.toString()));
 
       yield TransactionError();
     }

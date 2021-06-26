@@ -38,10 +38,10 @@ class _SplashScreenState extends State<SplashScreen> {
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
-        body: BlocListener<ErrorBloc, ErrorState>(
+        body: BlocListener<SnackbarBloc, SnackbarState>(
           listener: (context, state) {
             // handle unauthorized user and send back to splash screen
-            if (state is ErrorUnauthorizedShowing) {
+            if (state is SnackbarUnauthorizedShowing) {
               Navigator.of(context).pushAndRemoveUntil(
                 MaterialPageRoute(builder: (_) => SplashScreen()),
                 (route) => false,
@@ -50,8 +50,8 @@ class _SplashScreenState extends State<SplashScreen> {
               showSnackbar(context, state.message, isError: true);
             }
 
-            if (state is ErrorShowing) {
-              showSnackbar(context, state.message, isError: true);
+            if (state is SnackbarShowing) {
+              showSnackbar(context, state.message, isError: state.isError);
             }
           },
           child: _buildBody(),

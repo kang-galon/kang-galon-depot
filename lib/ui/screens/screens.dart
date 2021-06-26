@@ -1,9 +1,9 @@
 export 'splash_screen.dart';
-export 'login_screen.dart';
-export 'register_screen.dart';
-export 'verification_otp_screen.dart';
-export 'register_info_screen.dart';
-export 'register_map_screen.dart';
+export 'auth/login_screen.dart';
+export 'auth/register_screen.dart';
+export 'auth/verification_otp_screen.dart';
+export 'auth/register_info_screen.dart';
+export 'auth/register_map_screen.dart';
 export 'profile_screen.dart';
 export 'profile_edit_screen.dart';
 export 'home_screen.dart';

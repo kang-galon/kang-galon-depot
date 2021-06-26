@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:kang_galon_depot/constants/url.dart';
+import 'package:kang_galon_depot/exceptions/unauthorized_exception.dart';
 import 'package:kang_galon_depot/models/models.dart';
 import 'package:http/http.dart' as http;
 
@@ -16,7 +17,12 @@ class TransactionService {
     });
 
     dynamic json = jsonDecode(response.body);
-    if (!json['success']) throw new Exception(json['message']);
+    if (!json['success']) {
+      if (response.statusCode == 401) {
+        throw UnauthorizedException(json['message']);
+      }
+      throw new Exception(json['message']);
+    }
 
     List<Transaction> transactions = Transaction.fromJsonToList(json['data']);
     return transactions;

@@ -60,9 +60,15 @@ class DepotExistence extends DepotState {
   List<Object?> get props => [isExist];
 }
 
-class DepotSentOtpSuccess extends DepotState {
+class DepotSentOTPSuccess extends DepotState {
+  final String phoneNumber;
+  final String verificationId;
+
+  DepotSentOTPSuccess(
+      {required this.phoneNumber, required this.verificationId});
+
   @override
-  List<Object?> get props => [];
+  List<Object?> get props => [phoneNumber, verificationId];
 }
 
 class DepotVerifyOTPSuccess extends DepotState {
